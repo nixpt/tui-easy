@@ -53,14 +53,11 @@ pub use tui_scrollview as scroller;
 // `Popup`, `PopupState` with mouse-drag support.
 #[cfg(feature = "popup")]
 pub use tui_popup as popup;
-// Round 13 — vendored BigText widget from joshka/tui-big-text
-// (MIT/Apache-2.0). Renders large pixel text using font8x8 bitmap
-// glyphs. Stateless — only a `Widget` impl (no `StatefulWidget`).
-// Consumers reach `BigText` and `PixelSize` via
-// `tornado::widget::{BigText, PixelSize}` or the module re-export
-// `tornado::big_text`.
+// Migrated from vendored `tornado-big-text` to upstream
+// `tui-big-text` crate (v0.8, MIT/Apache-2.0). API is
+// identical: `BigText`, `PixelSize`.
 #[cfg(feature = "big-text")]
-pub use tornado_big_text as big_text;
+pub use tui_big_text as big_text;
 // Migrated from vendored `tornado-tree-widget` to upstream
 // `tui-tree-widget` crate (v0.24, MIT). API is identical:
 // `Tree`, `TreeItem`, `TreeState`, `Flattened`.

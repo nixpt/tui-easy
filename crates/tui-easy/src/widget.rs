@@ -48,10 +48,9 @@ pub use ratatui::widgets::{List, ListState};
 // `PopupState::mouse_down/mouse_up/mouse_drag`.
 #[cfg(feature = "popup")]
 pub use crate::popup::{Popup, PopupState};
-// Round 13 — vendored BigText + PixelSize from joshka/tui-big-text
-// (MIT/Apache-2.0). Consumers reach them as
-// `tornado::widget::{BigText, PixelSize}`. Stateless — only a `Widget`
-// impl (no `StatefulWidget`).
+// Migrated from vendored `tornado-big-text` to upstream
+// `tui-big-text` crate (v0.8, MIT/Apache-2.0). Consumers reach
+// them as `tornado::widget::{BigText, PixelSize}`.
 #[cfg(feature = "big-text")]
 pub use crate::big_text::{BigText, PixelSize};
 // Round 14 — vendored Tree + TreeItem + TreeState + Flattened from

@@ -56,13 +56,13 @@ tui-scrollview = { workspace = true, optional = true }
 # drag-repositioning. Gated behind the `popup` feature.
 # Replaces the vendored `tornado-popup`.
 tui-popup = { workspace = true, optional = true }
-# Optional — vendored BigText widget from joshka/tui-big-text
-# (MIT/Apache-2.0). Renders large pixel text using 8x8 font glyphs
-# (font8x8 crate). Gated behind the `big-text` feature.
+# Optional — BigText widget from tui-big-text (MIT/Apache-2.0).
+# Renders large pixel text using font8x8 glyphs. Gated behind the
+# `big-text` feature. Replaces the vendored `tornado-big-text`.
 # Consumers access `BigText` and `PixelSize` via
 # `tornado::widget::{BigText, PixelSize}` or the module re-export
 # `tornado::big_text`.
-tornado-big-text = { workspace = true, optional = true }
+tui-big-text = { workspace = true, optional = true }
 # Optional — Tree widget from the tui-tree-widget crate (MIT).
 # A stateful tree widget with selection, folding, and scrollbar support.
 # Gated behind the `tree` feature. Replaces the vendored
@@ -102,7 +102,7 @@ popup = ["dep:tui-popup"]
 # Renders large pixel text using the font8x8 bitmap font. The widget
 # implements `Widget for BigText` (stateless — no StatefulWidget).
 # See `crates/tornado-big-text/src/lib.rs` for the API surface.
-big-text = ["dep:tornado-big-text"]
+big-text = ["dep:tui-big-text"]
 # Round 14 — vendored Tree widget behind a `tree` feature.
 # A stateful tree widget with selection, folding, and scrollbar support.
 # The widget implements both `Widget` (stateless) and `StatefulWidget`
