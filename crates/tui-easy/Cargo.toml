@@ -77,44 +77,20 @@ hyperlink = ["dep:hyperrat"]
 spinner = ["dep:ratatui-cheese"]
 scroller = ["dep:tui-scrollview"]
 tabs = []
-# Round 10 — vendored Sparkline + SparklineBar behind a
-# `sparkline` feature. The smallest surface of any vendored
-# sibling (no StatefulWidget, no SparklineState) — chosen by
-# the round-10 design memo for the lowest vendoring lift.
-# Composition target: round-10 example slots a 12-col Sparkline
-# into the right flank of the existing 2-row status_bar footer.
+# Sparkline widget — empty gate. `ratatui::widgets::Sparkline` is
+# always available (ratatui is a hard dep). Kept for backward compat.
 sparkline = []
-# Round 11 — vendored List + StatefulWidget behind a `list`
-# feature. The canonical StatefulWidget vendoring precedent
-# (D2 round-11 design memo). BOTH trait impls vendored together;
-# see `crates/tornado-list/src/lib.rs` for the E0034 carve-out
-# pattern (fully-qualified trait-method call for disambiguation
-# when both `Widget` and `StatefulWidget` are in scope at the
-# consumer call site).
+# List widget — empty gate. `ratatui::widgets::{List, ListState}` are
+# always available. Kept for backward compat.
 list = []
-# Round 12 — vendored Popup widget behind a `popup` feature.
-# A simple popup with bordered box, title, body text, and optional
-# drag-repositioning. The widget implements both `Widget` (stateless)
-# and `StatefulWidget` (stateful with `PopupState`) on `&Popup`.
-# See `crates/tornado-popup/src/lib.rs` for the API surface.
+# Popup widget from the tui-popup crate (MIT).
 popup = ["dep:tui-popup"]
-# Round 13 — vendored BigText widget behind a `big-text` feature.
-# Renders large pixel text using the font8x8 bitmap font. The widget
-# implements `Widget for BigText` (stateless — no StatefulWidget).
-# See `crates/tornado-big-text/src/lib.rs` for the API surface.
+# BigText widget from the tui-big-text crate (MIT/Apache-2.0).
 big-text = ["dep:tui-big-text"]
-# Round 14 — vendored Tree widget behind a `tree` feature.
-# A stateful tree widget with selection, folding, and scrollbar support.
-# The widget implements both `Widget` (stateless) and `StatefulWidget`
-# (stateful with `TreeState`). See `crates/tornado-tree-widget/src/lib.rs`
-# for the API surface.
+# Tree widget from the tui-tree-widget crate (MIT).
 tree = ["dep:tui-tree-widget"]
-# Round 9: aggregate log-building primitives from the three vendored
-# sub-crates. Exposes `tornado::tab_log::TabLog` — the per-tab scroll
-# log primitive lifted out of round-7's ScrollLogApp. Use cases:
-# a multi-tab TuiApp (round 8), a single-pane log viewer with OSC 8
-# anchors, anything else that wants a virtual-scroll log behind a
-# status-bar surface.
+# Log view: aggregates styles + scroller + wrap to expose
+# `tornado::tab_log::TabLog` — per-tab scroll log helper.
 log_view = [
     "dep:tornado-styles",
     "dep:tui-scrollview",
@@ -146,16 +122,8 @@ required-features = ["spinner"]
 name = "scrollview_integration"
 required-features = ["scroller"]
 
-# Round 9: TabLog unit-tests live inside `crates/tornado/src/tab_log.rs`
-# (inline `#[cfg(test)] mod tests`). Per design-memo D4 the helper is
-# exercised at module level rather than as a separate integration
-# binary, mirroring every vendored sibling crate's own test layout.
+# TabLog unit-tests live inside `crates/tornado/src/tab_log.rs`
+# (inline `#[cfg(test)] mod tests`). Exercised at module level.
 
-# Round 10 — vendored Sparkline round-trip tests through the
-# umbrella. Companion tests live inline in
-# `crates/tornado-sparkline/src/lib.rs#mod tests` and in
-# `crates/tornado-sparkline/tests/sparkline_integration.rs`. The
-# umbrella does not need a separate gateway `[[test]]` entry —
-# the round-8 example mutation in `examples/multi-tab-log` is
-# the umbrella-level end-to-end coverage that exercises the
-# `sparkline` feature through `tornado::widget::Sparkline`.
+# Multi-tab-log example exercises tabs, sparkline, spinner,
+# scroller, and hyperlink end-to-end.
