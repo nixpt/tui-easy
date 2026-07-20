@@ -35,6 +35,37 @@ pub use tornado_tabs as tabs;
 // `crates/tornado-sparkline/src/lib.rs` for the verdict.
 #[cfg(feature = "sparkline")]
 pub use tornado_sparkline as sparkline;
+// Round 11 — vendored List + StatefulWidget for List + ListState from
+// ratatui 0.30 itself (dual MIT/Apache-2.0). The canonical
+// StatefulWidget vendoring precedent — BOTH trait impls vendored
+// together (no carve-out like round-6 Tabs). See
+// `crates/tornado-list/src/lib.rs` for the E0034 carve-out pattern
+// documentation.
+#[cfg(feature = "list")]
+pub use tornado_list as list;
+// Round 12 — vendored Popup widget from joshka/tui-popup (MIT).
+// A simple popup with bordered box, title, body text, and optional
+// drag-repositioning. Implements both `Widget` (stateless) and
+// `StatefulWidget` (stateful) on `&Popup`, so consumers can render
+// it via `frame.render_widget(&popup, area)`.
+#[cfg(feature = "popup")]
+pub use tornado_popup as popup;
+// Round 13 — vendored BigText widget from joshka/tui-big-text
+// (MIT/Apache-2.0). Renders large pixel text using font8x8 bitmap
+// glyphs. Stateless — only a `Widget` impl (no `StatefulWidget`).
+// Consumers reach `BigText` and `PixelSize` via
+// `tornado::widget::{BigText, PixelSize}` or the module re-export
+// `tornado::big_text`.
+#[cfg(feature = "big-text")]
+pub use tornado_big_text as big_text;
+// Round 14 — vendored Tree widget from EdJoPaTo/tui-rs-tree-widget
+// (MIT). A stateful tree widget with selection, folding, and scrollbar
+// support. Implements both `Widget` (stateless) and `StatefulWidget`
+// (stateful with `TreeState`). Consumers reach `Tree`, `TreeItem`,
+// `TreeState`, and `Flattened` via `tornado::widget::*` or the module
+// re-export `tornado::tree`.
+#[cfg(feature = "tree")]
+pub use tornado_tree_widget as tree;
 
 use ratatui::Frame;
 use std::time::Duration;

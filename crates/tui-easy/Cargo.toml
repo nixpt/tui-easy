@@ -48,6 +48,36 @@ tornado-tabs = { workspace = true, optional = true }
 # feature. See `crates/tornado-sparkline/NOTICE` for the
 # license-mirror attribution.
 tornado-sparkline = { workspace = true, optional = true }
+# Optional — vendored List + StatefulWidget for List + ListState
+# from ratatui 0.30 itself (dual MIT/Apache-2.0). Gated behind the
+# `list` feature. This is the canonical StatefulWidget vendoring
+# precedent — BOTH trait impls vendored together (no carve-out
+# like round-6 Tabs). See `crates/tornado-list/NOTICE` for the
+# license-mirror attribution. Consumers access `List` and
+# `ListState` via `tornado::widget::{List, ListState}` or the
+# module re-export `tornado::list`.
+tornado-list = { workspace = true, optional = true }
+# Optional — vendored Popup widget from joshka/tui-popup (MIT).
+# A simple popup with bordered box, title, body text, and optional
+# drag-repositioning. Gated behind the `popup` feature.
+# Consumers access `Popup` and `PopupState` via
+# `tornado::widget::{Popup, PopupState}` or the module re-export
+# `tornado::popup`. See `crates/tornado-popup/NOTICE` for the
+# license-mirror attribution.
+tornado-popup = { workspace = true, optional = true }
+# Optional — vendored BigText widget from joshka/tui-big-text
+# (MIT/Apache-2.0). Renders large pixel text using 8x8 font glyphs
+# (font8x8 crate). Gated behind the `big-text` feature.
+# Consumers access `BigText` and `PixelSize` via
+# `tornado::widget::{BigText, PixelSize}` or the module re-export
+# `tornado::big_text`.
+tornado-big-text = { workspace = true, optional = true }
+# Optional — vendored Tree widget from EdJoPaTo/tui-rs-tree-widget (MIT).
+# A stateful tree widget with selection, folding, and scrollbar support.
+# Gated behind the `tree` feature. Consumers access `Tree`, `TreeItem`,
+# `TreeState`, and `Flattened` via `tornado::widget::{Tree, TreeItem, ...}`
+# or the module re-export `tornado::tree`.
+tornado-tree-widget = { workspace = true, optional = true }
 
 [features]
 default = []
@@ -64,6 +94,31 @@ tabs = ["dep:tornado-tabs"]
 # Composition target: round-10 example slots a 12-col Sparkline
 # into the right flank of the existing 2-row status_bar footer.
 sparkline = ["dep:tornado-sparkline"]
+# Round 11 — vendored List + StatefulWidget behind a `list`
+# feature. The canonical StatefulWidget vendoring precedent
+# (D2 round-11 design memo). BOTH trait impls vendored together;
+# see `crates/tornado-list/src/lib.rs` for the E0034 carve-out
+# pattern (fully-qualified trait-method call for disambiguation
+# when both `Widget` and `StatefulWidget` are in scope at the
+# consumer call site).
+list = ["dep:tornado-list"]
+# Round 12 — vendored Popup widget behind a `popup` feature.
+# A simple popup with bordered box, title, body text, and optional
+# drag-repositioning. The widget implements both `Widget` (stateless)
+# and `StatefulWidget` (stateful with `PopupState`) on `&Popup`.
+# See `crates/tornado-popup/src/lib.rs` for the API surface.
+popup = ["dep:tornado-popup"]
+# Round 13 — vendored BigText widget behind a `big-text` feature.
+# Renders large pixel text using the font8x8 bitmap font. The widget
+# implements `Widget for BigText` (stateless — no StatefulWidget).
+# See `crates/tornado-big-text/src/lib.rs` for the API surface.
+big-text = ["dep:tornado-big-text"]
+# Round 14 — vendored Tree widget behind a `tree` feature.
+# A stateful tree widget with selection, folding, and scrollbar support.
+# The widget implements both `Widget` (stateless) and `StatefulWidget`
+# (stateful with `TreeState`). See `crates/tornado-tree-widget/src/lib.rs`
+# for the API surface.
+tree = ["dep:tornado-tree-widget"]
 # Round 9: aggregate log-building primitives from the three vendored
 # sub-crates. Exposes `tornado::tab_log::TabLog` — the per-tab scroll
 # log primitive lifted out of round-7's ScrollLogApp. Use cases:

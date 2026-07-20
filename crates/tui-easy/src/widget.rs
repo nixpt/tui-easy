@@ -28,6 +28,36 @@ pub use crate::tabs::Tabs as TabNav;
 // only way to override the default `"█"` symbol.
 #[cfg(feature = "sparkline")]
 pub use crate::sparkline::{Sparkline, SparklineBar};
+// Round 11 — vendored List + ListState surface via the umbrella's
+// `list` feature. Consumers reach them as
+// `tornado::widget::{List, ListState}`. The canonical
+// StatefulWidget vendoring precedent — BOTH trait impls vendored
+// together (no carve-out). Use the fully-qualified form
+// `<List as StatefulWidget>::render(list, area, buf, &mut state)`
+// when both `Widget` and `StatefulWidget` are in scope to avoid
+// E0034 — see `crates/tornado-list/src/lib.rs`.
+#[cfg(feature = "list")]
+pub use crate::list::{List, ListState};
+// Round 12 — vendored Popup + PopupState from joshka/tui-popup (MIT).
+// Consumers reach them as `tornado::widget::{Popup, PopupState}`.
+// The popup implements both `Widget for &Popup` and
+// `StatefulWidget for &Popup` for stateless and stateful rendering.
+// Stateful rendering enables mouse-drag repositioning via
+// `PopupState::mouse_down/mouse_up/mouse_drag`.
+#[cfg(feature = "popup")]
+pub use crate::popup::{Popup, PopupState};
+// Round 13 — vendored BigText + PixelSize from joshka/tui-big-text
+// (MIT/Apache-2.0). Consumers reach them as
+// `tornado::widget::{BigText, PixelSize}`. Stateless — only a `Widget`
+// impl (no `StatefulWidget`).
+#[cfg(feature = "big-text")]
+pub use crate::big_text::{BigText, PixelSize};
+// Round 14 — vendored Tree + TreeItem + TreeState + Flattened from
+// EdJoPaTo/tui-rs-tree-widget (MIT). Consumers reach them as
+// `tornado::widget::{Tree, TreeItem, TreeState, Flattened}`.
+// The widget implements both `Widget` and `StatefulWidget`.
+#[cfg(feature = "tree")]
+pub use crate::tree::{Flattened, Tree, TreeItem, TreeState};
 #[cfg(feature = "styles")]
 use crate::styles::Style as AnsiStyle;
 
