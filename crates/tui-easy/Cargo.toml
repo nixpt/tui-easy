@@ -21,9 +21,10 @@ tornado-styles = { workspace = true, optional = true }
 # borrowed from xai-ratatui-textarea. Gated behind the `wrap` feature
 # (and pulls in `textwrap` transitively).
 tornado-wrap = { workspace = true, optional = true }
-# Optional — OSC 8 hyperlink widget for ratatui, vendored from hyperrat
-# (dual MIT/Unlicense). Gated behind the `hyperlink` feature.
-tornado-hyperlink = { workspace = true, optional = true }
+# Optional — OSC 8 hyperlink widget for ratatui, from the
+# hyperrat crate (dual MIT/Unlicense). Gated behind the
+# `hyperlink` feature. Replaces the vendored `tornado-hyperlink`.
+hyperrat = { workspace = true, optional = true }
 # Optional — bubbletea-inspired spinner widget for ratatui, from the
 # ratatui-cheese crate (MIT). Gated behind the `spinner` feature.
 # Replaces the vendored `tornado-spinner`. The widget's
@@ -31,24 +32,20 @@ tornado-hyperlink = { workspace = true, optional = true }
 # `run_app` loop iteration and advances frames at the cadence defined
 # by `SpinnerType::interval`.
 ratatui-cheese = { workspace = true, optional = true }
-# Optional — stateful scrolling view for ratatui, vendored from
-# tui-scrollview v0.6.7 (Josh McKinney, dual MIT/Apache-2.0). Gated
-# behind the `scroller` feature.
-tornado-scrollview = { workspace = true, optional = true }
+# Optional — stateful scrolling view for ratatui, from the
+# tui-scrollview crate (Josh McKinney, dual MIT/Apache-2.0). Gated
+# behind the `scroller` feature. Replaces the vendored
+# `tornado-scrollview`.
+tui-scrollview = { workspace = true, optional = true }
 # Optional — Tabs widget for ratatui. Since ratatui 0.30
 # provides `ratatui::widgets::Tabs` natively, this feature
 # simply re-exports it as `TabNav` (no vendored dep needed).
 # The `tabs` feature is kept as an empty feature for backward
 # compatibility with existing consumers.
-# Optional — Sparkline + SparklineBar widget for ratatui,
-# vendored from ratatui 0.30 itself (dual MIT/Apache-2.0).
-# The widget is fully **stateless** — only a `Widget` impl
-# is vendored (no `SparklineState` upstream). Composition with
-# the existing `status_bar` (`tornado::widget::status_bar`) is
-# the headlining use case. Gated behind the `sparkline`
-# feature. See `crates/tornado-sparkline/NOTICE` for the
-# license-mirror attribution.
-tornado-sparkline = { workspace = true, optional = true }
+# Optional — Sparkline widget. `ratatui::widgets::Sparkline` is
+# always available (ratatui is a hard dep); the `sparkline` feature
+# is an empty gate for backward compatibility with existing
+# consumers that enable it. Replaces the vendored `tornado-sparkline`.
 # Optional — vendored List + StatefulWidget for List + ListState
 # from ratatui 0.30 itself (dual MIT/Apache-2.0). Gated behind the
 # `list` feature. This is the canonical StatefulWidget vendoring
@@ -58,14 +55,11 @@ tornado-sparkline = { workspace = true, optional = true }
 # `ListState` via `tornado::widget::{List, ListState}` or the
 # module re-export `tornado::list`.
 tornado-list = { workspace = true, optional = true }
-# Optional — vendored Popup widget from joshka/tui-popup (MIT).
+# Optional — Popup widget from the tui-popup crate (MIT).
 # A simple popup with bordered box, title, body text, and optional
 # drag-repositioning. Gated behind the `popup` feature.
-# Consumers access `Popup` and `PopupState` via
-# `tornado::widget::{Popup, PopupState}` or the module re-export
-# `tornado::popup`. See `crates/tornado-popup/NOTICE` for the
-# license-mirror attribution.
-tornado-popup = { workspace = true, optional = true }
+# Replaces the vendored `tornado-popup`.
+tui-popup = { workspace = true, optional = true }
 # Optional — vendored BigText widget from joshka/tui-big-text
 # (MIT/Apache-2.0). Renders large pixel text using 8x8 font glyphs
 # (font8x8 crate). Gated behind the `big-text` feature.
@@ -73,20 +67,19 @@ tornado-popup = { workspace = true, optional = true }
 # `tornado::widget::{BigText, PixelSize}` or the module re-export
 # `tornado::big_text`.
 tornado-big-text = { workspace = true, optional = true }
-# Optional — vendored Tree widget from EdJoPaTo/tui-rs-tree-widget (MIT).
+# Optional — Tree widget from the tui-tree-widget crate (MIT).
 # A stateful tree widget with selection, folding, and scrollbar support.
-# Gated behind the `tree` feature. Consumers access `Tree`, `TreeItem`,
-# `TreeState`, and `Flattened` via `tornado::widget::{Tree, TreeItem, ...}`
-# or the module re-export `tornado::tree`.
-tornado-tree-widget = { workspace = true, optional = true }
+# Gated behind the `tree` feature. Replaces the vendored
+# `tornado-tree-widget`.
+tui-tree-widget = { workspace = true, optional = true }
 
 [features]
 default = []
 styles = ["dep:tornado-styles"]
 wrap = ["dep:tornado-wrap"]
-hyperlink = ["dep:tornado-hyperlink"]
+hyperlink = ["dep:hyperrat"]
 spinner = ["dep:ratatui-cheese"]
-scroller = ["dep:tornado-scrollview"]
+scroller = ["dep:tui-scrollview"]
 tabs = []
 # Round 10 — vendored Sparkline + SparklineBar behind a
 # `sparkline` feature. The smallest surface of any vendored
@@ -94,7 +87,7 @@ tabs = []
 # the round-10 design memo for the lowest vendoring lift.
 # Composition target: round-10 example slots a 12-col Sparkline
 # into the right flank of the existing 2-row status_bar footer.
-sparkline = ["dep:tornado-sparkline"]
+sparkline = []
 # Round 11 — vendored List + StatefulWidget behind a `list`
 # feature. The canonical StatefulWidget vendoring precedent
 # (D2 round-11 design memo). BOTH trait impls vendored together;
@@ -108,7 +101,7 @@ list = ["dep:tornado-list"]
 # drag-repositioning. The widget implements both `Widget` (stateless)
 # and `StatefulWidget` (stateful with `PopupState`) on `&Popup`.
 # See `crates/tornado-popup/src/lib.rs` for the API surface.
-popup = ["dep:tornado-popup"]
+popup = ["dep:tui-popup"]
 # Round 13 — vendored BigText widget behind a `big-text` feature.
 # Renders large pixel text using the font8x8 bitmap font. The widget
 # implements `Widget for BigText` (stateless — no StatefulWidget).
@@ -119,7 +112,7 @@ big-text = ["dep:tornado-big-text"]
 # The widget implements both `Widget` (stateless) and `StatefulWidget`
 # (stateful with `TreeState`). See `crates/tornado-tree-widget/src/lib.rs`
 # for the API surface.
-tree = ["dep:tornado-tree-widget"]
+tree = ["dep:tui-tree-widget"]
 # Round 9: aggregate log-building primitives from the three vendored
 # sub-crates. Exposes `tornado::tab_log::TabLog` — the per-tab scroll
 # log primitive lifted out of round-7's ScrollLogApp. Use cases:
@@ -128,7 +121,7 @@ tree = ["dep:tornado-tree-widget"]
 # status-bar surface.
 log_view = [
     "dep:tornado-styles",
-    "dep:tornado-scrollview",
+    "dep:tui-scrollview",
     "dep:tornado-wrap",
 ]
 

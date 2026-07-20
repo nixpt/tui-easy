@@ -24,7 +24,7 @@ use ratatui::layout::{Rect, Size};
 use ratatui::text::Line;
 use ratatui::widgets::Paragraph;
 
-use tornado_scrollview::{ScrollView, ScrollViewState};
+use tui_scrollview::{ScrollView, ScrollViewState};
 use tornado_styles::HyperlinkTarget;
 
 /// One row in a [`TabLog`]'s virtual buffer.

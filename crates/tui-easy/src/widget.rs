@@ -20,15 +20,17 @@ pub use crate::scroller::ScrollView;
 // `Widget` impl (consuming) which matches the round-6 contract.
 #[cfg(feature = "tabs")]
 pub use ratatui::widgets::Tabs as TabNav;
-// Round 10: the vendored `Sparkline` + `SparklineBar` widgets
-// surface via the umbrella's `sparkline` feature. No semantic
-// alias needed (unlike the round-6 catch-up `Tabs as TabNav`
-// rename) because `Sparkline` is already the canonical upstream
-// verb and consumers reach it directly. The `SparklineBar` is
-// also exposed because `Sparkline::bar_set(SparklineBar)` is the
-// only way to override the default `"█"` symbol.
+// Migrated: `Sparkline` is now re-exported from
+// `ratatui::widgets::Sparkline` directly. The vendored
+// `crates/tornado-sparkline` has been removed. Note: the native
+// API differs from the vendored version — `Sparkline::new(&[u64])`
+// became `Sparkline::default().data(&[u64])`, and `bar_set()`
+// now accepts `ratatui::symbols::bar::Set` instead of
+// `SparklineBar`. Consumers may need to update their code.
+// The `sparkline` feature is kept as an empty gate for backward
+// compatibility.
 #[cfg(feature = "sparkline")]
-pub use crate::sparkline::{Sparkline, SparklineBar};
+pub use ratatui::widgets::Sparkline;
 // Round 11 — vendored List + ListState surface via the umbrella's
 // `list` feature. Consumers reach them as
 // `tornado::widget::{List, ListState}`. The canonical

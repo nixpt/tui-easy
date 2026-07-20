@@ -84,7 +84,8 @@ use tornado::event::TuiEvent;
 use tornado::spinner::{SpinnerState, SpinnerType};
 use tornado::tab_log::TabLog;
 use tornado::theme::RatatuiThemeColors;
-use tornado::widget::{Sparkline, SparklineBar, status_bar};
+use ratatui::symbols::bar;
+use tornado::widget::{Sparkline, status_bar};
 use tornado::{run_app, TuiApp};
 
 use crate::tab_log::{append_row, seed_streams, TAB_TITLES};
@@ -425,21 +426,24 @@ impl TuiApp for MultiTabApp {
         );
 
         // Round-10: 12-col Sparkline on the right flank of the
-        // footer's 2-row content. The rolling buffer shows the
-        // tick_count history — a deterministic metric that
-        // always advances, no `Instant::now()` involvement, so
-        // the render is stable across CI runs.
+        // footer's 2-row content. Uses the native
+        // `ratatui::widgets::Sparkline` API (the vendored
+        // `tornado-sparkline` has been removed).
         frame.render_widget(
-            Sparkline::new(&self.sparkline_ring)
-                .style(ratatui::style::Style::default().fg(ratatui::style::Color::DarkGray))
-                .bar_set(
-                    SparklineBar::new("▁▂▃▄▅▆▇█")
-                        .style(
-                            ratatui::style::Style::default()
-                                .fg(ratatui::style::Color::Cyan)
-                                .add_modifier(ratatui::style::Modifier::BOLD),
-                        ),
-                ),
+            Sparkline::default()
+                .data(&self.sparkline_ring[..])
+                .style(ratatui::style::Style::default().fg(ratatui::style::Color::Cyan).add_modifier(ratatui::style::Modifier::BOLD))
+                .bar_set(bar::Set {
+                    full: "█",
+                    seven_eighths: "▇",
+                    three_quarters: "▆",
+                    five_eighths: "▅",
+                    half: "▄",
+                    three_eighths: "▃",
+                    one_quarter: "▂",
+                    one_eighth: "▁",
+                    empty: " ",
+                }),
             footer_split[1],
         );
     }

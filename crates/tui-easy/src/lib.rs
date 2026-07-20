@@ -18,8 +18,11 @@ pub use tornado_styles as styles;
 #[cfg(feature = "wrap")]
 pub use tornado_wrap as wrap;
 
+// Migrated from vendored `tornado-hyperlink` to upstream
+// `hyperrat` crate (v0.1, MIT/Unlicense). API is identical:
+// `Link` widget with OSC 8 hyperlink support.
 #[cfg(feature = "hyperlink")]
-pub use tornado_hyperlink as hyperlink;
+pub use hyperrat as hyperlink;
 
 // Migrated from vendored `tornado-spinner` to upstream
 // `ratatui-cheese` crate (v0.7, MIT). API is identical:
@@ -27,20 +30,21 @@ pub use tornado_hyperlink as hyperlink;
 #[cfg(feature = "spinner")]
 pub use ratatui_cheese::spinner as spinner;
 
+// Migrated from vendored `tornado-scrollview` to upstream
+// `tui-scrollview` crate (v0.6, MIT/Apache-2.0). API is
+// identical: `ScrollView`, `ScrollViewState`, `ScrollbarVisibility`.
 #[cfg(feature = "scroller")]
-pub use tornado_scrollview as scroller;
+pub use tui_scrollview as scroller;
 // Round 6 catch-up migration: `tabs` feature now re-exports
 // `ratatui::widgets::Tabs` directly as `tornado::widget::TabNav`
 // (was vendored via `crates/tornado-tabs`, now removed).
 // The re-export lives in `widget.rs` under the `TabNav` alias —
 // no module-level `pub use` is needed here.
-// Round 10: vendored Sparkline + SparklineBar widget from ratatui
-// 0.30 itself (dual MIT/Apache-2.0). The widget is fully **stateless**
-// — no `StatefulWidget` counterpart exists upstream either — so the
-// vendored mirror exposes only the `Widget` impl. See
-// `crates/tornado-sparkline/src/lib.rs` for the verdict.
-#[cfg(feature = "sparkline")]
-pub use tornado_sparkline as sparkline;
+// Migrated: `sparkline` feature now uses `ratatui::widgets::Sparkline`
+// directly (was vendored via `crates/tornado-sparkline`, now removed).
+// Consumers access Sparkline via `ratatui::widgets::Sparkline` or
+// the re-export at `tornado::widget::Sparkline`.
+// No module-level `pub use` is needed — the re-export is via widget.rs.
 // Round 11 — vendored List + StatefulWidget for List + ListState from
 // ratatui 0.30 itself (dual MIT/Apache-2.0). The canonical
 // StatefulWidget vendoring precedent — BOTH trait impls vendored
@@ -49,13 +53,11 @@ pub use tornado_sparkline as sparkline;
 // documentation.
 #[cfg(feature = "list")]
 pub use tornado_list as list;
-// Round 12 — vendored Popup widget from joshka/tui-popup (MIT).
-// A simple popup with bordered box, title, body text, and optional
-// drag-repositioning. Implements both `Widget` (stateless) and
-// `StatefulWidget` (stateful) on `&Popup`, so consumers can render
-// it via `frame.render_widget(&popup, area)`.
+// Migrated from vendored `tornado-popup` to upstream
+// `tui-popup` crate (v0.7, MIT). API is identical:
+// `Popup`, `PopupState` with mouse-drag support.
 #[cfg(feature = "popup")]
-pub use tornado_popup as popup;
+pub use tui_popup as popup;
 // Round 13 — vendored BigText widget from joshka/tui-big-text
 // (MIT/Apache-2.0). Renders large pixel text using font8x8 bitmap
 // glyphs. Stateless — only a `Widget` impl (no `StatefulWidget`).
@@ -64,14 +66,11 @@ pub use tornado_popup as popup;
 // `tornado::big_text`.
 #[cfg(feature = "big-text")]
 pub use tornado_big_text as big_text;
-// Round 14 — vendored Tree widget from EdJoPaTo/tui-rs-tree-widget
-// (MIT). A stateful tree widget with selection, folding, and scrollbar
-// support. Implements both `Widget` (stateless) and `StatefulWidget`
-// (stateful with `TreeState`). Consumers reach `Tree`, `TreeItem`,
-// `TreeState`, and `Flattened` via `tornado::widget::*` or the module
-// re-export `tornado::tree`.
+// Migrated from vendored `tornado-tree-widget` to upstream
+// `tui-tree-widget` crate (v0.24, MIT). API is identical:
+// `Tree`, `TreeItem`, `TreeState`, `Flattened`.
 #[cfg(feature = "tree")]
-pub use tornado_tree_widget as tree;
+pub use tui_tree_widget as tree;
 
 use ratatui::Frame;
 use std::time::Duration;
