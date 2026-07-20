@@ -92,7 +92,7 @@ use tornado::event::TuiEvent;
 use tornado::spinner::{SpinnerState, SpinnerType};
 use tornado::tab_log::TabLog;
 use tornado::theme::RatatuiThemeColors;
-use tornado::widget::status_bar;
+use tornado::widget::{Sparkline, SparklineBar, status_bar};
 use tornado::{run_app, TuiApp};
 
 use crate::tab_log::{append_row, seed_streams, TAB_TITLES};
@@ -110,7 +110,20 @@ const TICK_RATE: Duration = Duration::from_millis(80);
 /// the population of *every* tab moving: even non-active streams
 /// receive occasional rows so the per-tab body content stays distinct
 /// and the demo never greys out a tab on long runs.
+/// How many ticks between per-tab "task done" appends. Round-8 keeps
+/// the population of *every* tab moving: even non-active streams
+/// receive occasional rows so the per-tab body content stays distinct
+/// and the demo never greys out a tab on long runs.
 const TASK_COMPLETE_EVERY: u32 = 4;
+
+/// How many recent frames the Sparkline widget displays. Round 10
+/// picked 12 because that's the natural size of the footer's
+/// right flank without crowding the text half of the status bar.
+/// Round 10 design memo D9: the metric ingestion advances under
+/// `tick_count % TASK_COMPLETE_EVERY == 0` (the MSRV-portable form;
+/// `<integer>::is_multiple_of` is stabilized in Rust 1.87.0, but the
+/// workspace pins `rust-version = "1.85.0"`).
+const SPARKLINE_RING_LEN: usize = 12;
 
 // ── The app ───────────────────────────────────────────────────────────────
 
@@ -132,6 +145,11 @@ struct MultiTabApp {
     /// row-pump cadence.
     last_tick: Instant,
     tick_count: u32,
+    /// Round-10: rolling-c sparkline metrics over the last
+    /// `SPARKLINE_RING_LEN` frames. The widget draws this slice
+    /// directly (`Sparkline::new(&ring_buffer)`); we just need to
+    /// advance the buffer on each `TASK_COMPLETE_EVERY` tick.
+    sparkline_ring: Vec<u64>,
     /// Set by quit keys in `handle_event`. `run_app` polls
     /// `should_quit` and tears down the loop when this flips.
     quit: bool,
@@ -146,8 +164,20 @@ impl MultiTabApp {
             theme: tornado::theme::ThemeColors::default().to_ratatui(),
             last_tick: Instant::now(),
             tick_count: 0,
+            sparkline_ring: vec![1; SPARKLINE_RING_LEN],
             quit: false,
         }
+    }
+
+    /// Round-10 (D9): ingest a fresh metric sample into the
+    /// sparkline ring. Called from `update()` on each
+    /// `TASK_COMPLETE_EVERY` tick and from the dedicated
+    /// `smoke_sparkline_metrics_advance_on_tick` test.
+    fn push_sparkline_metric(&mut self, value: u64) {
+        // Carry the vector forward; rotate the oldest entry.
+        self.sparkline_ring.rotate_left(1);
+        let last = self.sparkline_ring.len() - 1;
+        self.sparkline_ring[last] = value;
     }
 
     /// Mutable handle to the currently-displayed tab. Caller holds
@@ -205,6 +235,13 @@ impl TuiApp for MultiTabApp {
         for tab in self.tabs.iter_mut() {
             tab.reset_to_bottom_if_pinned();
         }
+
+        // Round-10 (D9): metric ingestion for the rolling-c
+        // Sparkline. We sample `tick_count` directly (no
+        // `Instant::now()` wall-clock) so the metric shape is
+        // deterministic across CI runs (carries forward the
+        // round-8 `Instant::now()` test-loop trap defense).
+        self.push_sparkline_metric(self.tick_count as u64);
     }
 
     fn handle_event(&mut self, event: TuiEvent) {
@@ -345,7 +382,20 @@ impl TuiApp for MultiTabApp {
         let pair = self.active().render_pair();
         frame.render_stateful_widget(pair.view, body_area, pair.state);
 
-        // ── Status: offset + top anchor + tab count + pin ratio ────
+        // ── Status (2 rows): text half + sparkline half ────────────
+        //
+        // The footer keeps the same 2-row shape (block TOP border +
+        // content row). We split the content row horizontally into
+        // a text half (with the existing status_bar Paragraph) and
+        // a 12-col Sparkline half (round-10 D5 + D9).
+        let footer_split = Layout::default()
+            .direction(Direction::Horizontal)
+            .constraints([
+                Constraint::Min((status_area.width as usize).saturating_sub(SPARKLINE_RING_LEN).max(1) as u16),
+                Constraint::Length(SPARKLINE_RING_LEN as u16),
+            ])
+            .split(status_area);
+
         let anchor_part = {
             // Read-only top-anchor lookup first, before any
             // scroll-state mutables are taken — keeps the borrow
@@ -361,19 +411,44 @@ impl TuiApp for MultiTabApp {
         };
         let pinned_count = self.tabs.iter().filter(|t| t.is_pinned()).count();
         let left = format!(
-            " y={} │ {} │ tab {}/{} │ q",
-            scroll_y, anchor_part, self.active_tab + 1, self.tabs.len()
-        );
-        let right = format!(
-            "{} rows │ pins {}/{}",
+            " y={} │ {} │ tab {}/{} │ q │ {} rows │ pins {}/{}",
+            scroll_y,
+            anchor_part,
+            self.active_tab + 1,
+            self.tabs.len(),
             self.active().row_count(),
             pinned_count,
             self.tabs.len()
         );
 
         frame.render_widget(
-            status_bar(left, Some(right), &self.theme),
-            status_area,
+            // The right half of the footer carries the round-10
+            // Sparkline widget (rendered below); the inline `right`
+            // text path of `status_bar` is unused. Pass
+            // `Some(String::new())` so the Option<impl Into<Line<'_>>>
+            // parameter resolves — bare `None` triggers E0283
+            // because Rust cannot infer the trait-bound T.
+            status_bar(left, Some(String::new()), &self.theme),
+            footer_split[0],
+        );
+
+        // Round-10: 12-col Sparkline on the right flank of the
+        // footer's 2-row content. The rolling buffer shows the
+        // tick_count history — a deterministic metric that
+        // always advances, no `Instant::now()` involvement, so
+        // the render is stable across CI runs.
+        frame.render_widget(
+            Sparkline::new(&self.sparkline_ring)
+                .style(ratatui::style::Style::default().fg(ratatui::style::Color::DarkGray))
+                .bar_set(
+                    SparklineBar::new("▁▂▃▄▅▆▇█")
+                        .style(
+                            ratatui::style::Style::default()
+                                .fg(ratatui::style::Color::Cyan)
+                                .add_modifier(ratatui::style::Modifier::BOLD),
+                        ),
+                ),
+            footer_split[1],
         );
     }
 }
@@ -644,6 +719,63 @@ mod tests {
         assert!(
             title.contains(&expected_glyph.trim()),
             "title row missing current spinner glyph {expected_glyph:?}: {title:?}"
+        );
+    }
+
+    #[test]
+    fn smoke_sparkline_metrics_advance_on_tick() {
+        // Round 10 (D9): the rolling-c Sparkline metric advances
+        // deterministically across CI runs. We tick the metric
+        // directly via `push_sparkline_metric` rather than via
+        // wall-clock `Instant::now()`, carrying forward the
+        // round-8 `Instant::now()` test-loop trap defense
+        // (`is_multiple_of` MSRV pitfall + Instant::now() near-zero
+        // dt in tight loops).
+        //
+        // Contract: after 5 explicit `push_sparkline_metric` calls
+        // with monotonically increasing values, the ring's *last*
+        // entry must equal the most-recent push and the *first*
+        // entry must equal the second-most-recent push (the ring
+        // rotates left by one slot per push).
+        let mut app = fresh_app();
+        let initial_first = app.sparkline_ring[0];
+        let initial_last = *app.sparkline_ring.last().unwrap();
+
+        for tick in 100u64..105u64 {
+            app.push_sparkline_metric(tick);
+        }
+
+        let final_first = app.sparkline_ring[0];
+        let final_last = *app.sparkline_ring.last().unwrap();
+
+        // `push_sparkline_metric` does `rotate_left(1) + ring[len-1] = v`,
+        // so each push shifts previously `index 0` content out the back
+        // and drops the new value into the back. After 5 pushes into a
+        // 12-cell ring, the most-recent pushes occupy positions
+        // `[len-5..len)` (= [7..12)) and the historically oldest
+        // positions [0..7) retain the seeded `1` values untouched.
+        assert_eq!(
+            final_last, 104,
+            "ring's last entry must equal the most recent push"
+        );
+        assert_eq!(
+            app.sparkline_ring[SPARKLINE_RING_LEN - 2],
+            103,
+            "ring's penultimate entry must equal the second-most-recent push (104 - 1 = 103)"
+        );
+        assert_eq!(
+            app.sparkline_ring[SPARKLINE_RING_LEN - 5],
+            100,
+            "ring's position [len-5] must equal the first of the 5 push values"
+        );
+        assert_eq!(
+            final_first, initial_first,
+            "ring's index 0 is below the rolling-5 shadow ring (length 12 > 5 pushes), so its initial 1 must survive"
+        );
+        assert_ne!(
+            (initial_first, initial_last),
+            (final_first, final_last),
+            "after 5 pushes the ring's last entry must change (initial_last=1, final_last=104)"
         );
     }
 

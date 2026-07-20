@@ -39,6 +39,15 @@ tornado-scrollview = { workspace = true, optional = true }
 # dual MIT/Apache-2.0). Gated behind the `tabs` feature. See
 # `crates/tornado-tabs/NOTICE` for the license-mirror attribution.
 tornado-tabs = { workspace = true, optional = true }
+# Optional — Sparkline + SparklineBar widget for ratatui,
+# vendored from ratatui 0.30 itself (dual MIT/Apache-2.0).
+# The widget is fully **stateless** — only a `Widget` impl
+# is vendored (no `SparklineState` upstream). Composition with
+# the existing `status_bar` (`tornado::widget::status_bar`) is
+# the headlining use case. Gated behind the `sparkline`
+# feature. See `crates/tornado-sparkline/NOTICE` for the
+# license-mirror attribution.
+tornado-sparkline = { workspace = true, optional = true }
 
 [features]
 default = []
@@ -48,6 +57,13 @@ hyperlink = ["dep:tornado-hyperlink"]
 spinner = ["dep:tornado-spinner"]
 scroller = ["dep:tornado-scrollview"]
 tabs = ["dep:tornado-tabs"]
+# Round 10 — vendored Sparkline + SparklineBar behind a
+# `sparkline` feature. The smallest surface of any vendored
+# sibling (no StatefulWidget, no SparklineState) — chosen by
+# the round-10 design memo for the lowest vendoring lift.
+# Composition target: round-10 example slots a 12-col Sparkline
+# into the right flank of the existing 2-row status_bar footer.
+sparkline = ["dep:tornado-sparkline"]
 # Round 9: aggregate log-building primitives from the three vendored
 # sub-crates. Exposes `tornado::tab_log::TabLog` — the per-tab scroll
 # log primitive lifted out of round-7's ScrollLogApp. Use cases:
@@ -89,3 +105,12 @@ required-features = ["scroller"]
 # (inline `#[cfg(test)] mod tests`). Per design-memo D4 the helper is
 # exercised at module level rather than as a separate integration
 # binary, mirroring every vendored sibling crate's own test layout.
+
+# Round 10 — vendored Sparkline round-trip tests through the
+# umbrella. Companion tests live inline in
+# `crates/tornado-sparkline/src/lib.rs#mod tests` and in
+# `crates/tornado-sparkline/tests/sparkline_integration.rs`. The
+# umbrella does not need a separate gateway `[[test]]` entry —
+# the round-8 example mutation in `examples/multi-tab-log` is
+# the umbrella-level end-to-end coverage that exercises the
+# `sparkline` feature through `tornado::widget::Sparkline`.

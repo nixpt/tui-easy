@@ -6,7 +6,13 @@ rust-version.workspace = true
 license.workspace = true
 homepage.workspace = true
 repository.workspace = true
-description = "Round 8 example: multi-tab log consumer composing round-9 TabLog helper + tornado::widget::TabNav (round-6 catch-up funneled through the umbrella)"
+# Round-10 description update: the round-8 example retains its
+# role as the single end-to-end consumer composing every vendored
+# sibling + the round-9 TabLog helper. The round-10 mutation slots
+# a 12-col Sparkline into the right flank of the existing 2-row
+# status_bar — no layout shift, just a new rolling-c spark metric
+# visible alongside the text footer.
+description = "Round 8/10 example: multi-tab log consumer composing round-9 TabLog helper + tornado::widget::TabNav + round-10 Sparkline in status_bar footer"
 publish = false
 
 [[bin]]
@@ -14,14 +20,19 @@ name = "multi-tab-log"
 path = "src/main.rs"
 
 [dependencies]
-# Round 8 example consuming six umbrella features together:
+# Round 8 example consuming the umbrella features together (round 10
+# adds the seventh):
 #   - `log_view` — round-9 TabLog helper.
 #   - `spinner`  — global SpinnerState in the title bar.
 #   - `wrap`     — exercises the inline smoke test for `word_wrap_line`.
 #   - `hyperlink` — OSC 8 anchor rendering for the per-row URLs.
 #   - `styles`   — `HyperlinkTarget` plumbing shared with TabLog.
-#   - `tabs`     — round-6 catch-up: `tornado::widget::TabNav`
-#                  replaced the round-8 Path-B direct import.
+#   - `tabs`     — round-6 catch-up: `tornado::widget::TabNav`.
+#   - `sparkline` — round-10: 12-col Sparkline slotted into the
+#                  right flank of the existing 2-row status_bar
+#                  footer (per round-10 design memo D5/D9). The
+#                  widget shows the rolling row-append cadence
+#                  of the active tab over the last ~12 frames.
 tornado = { workspace = true, features = [
     "log_view",
     "spinner",
@@ -29,6 +40,7 @@ tornado = { workspace = true, features = [
     "hyperlink",
     "styles",
     "tabs",
+    "sparkline",
 ] }
 # Pattern-matching on KeyCode / KeyModifiers — not re-exported by tornado.
 crossterm = "0.28"

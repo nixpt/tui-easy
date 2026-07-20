@@ -28,6 +28,13 @@ pub use tornado_spinner as spinner;
 pub use tornado_scrollview as scroller;
 #[cfg(feature = "tabs")]
 pub use tornado_tabs as tabs;
+// Round 10: vendored Sparkline + SparklineBar widget from ratatui
+// 0.30 itself (dual MIT/Apache-2.0). The widget is fully **stateless**
+// — no `StatefulWidget` counterpart exists upstream either — so the
+// vendored mirror exposes only the `Widget` impl. See
+// `crates/tornado-sparkline/src/lib.rs` for the verdict.
+#[cfg(feature = "sparkline")]
+pub use tornado_sparkline as sparkline;
 
 use ratatui::Frame;
 use std::time::Duration;
