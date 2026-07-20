@@ -6,7 +6,7 @@ rust-version.workspace = true
 license.workspace = true
 homepage.workspace = true
 repository.workspace = true
-description = "Round 8 example: multi-tab log consumer composing round-9 TabLog helper + ratatui::widgets::Tabs (Path B — bypasses the missing round-6 vendoring)"
+description = "Round 8 example: multi-tab log consumer composing round-9 TabLog helper + tornado::widget::TabNav (round-6 catch-up funneled through the umbrella)"
 publish = false
 
 [[bin]]
@@ -14,30 +14,21 @@ name = "multi-tab-log"
 path = "src/main.rs"
 
 [dependencies]
-# Round 8: the per-tab scroll mechanics come from
-# `tornado::tab_log::TabLog` (round-9 helper, gated behind the
-# `log_view` umbrella feature which transitively pulls in styles +
-# scroller + wrap). The remaining features activate the other
-# surfaces the example composes:
-#   - `spinner` — global SpinnerState in the title bar.
-#   - `wrap` — exercises the inline smoke test for `word_wrap_line`.
-#   - `widget` — exposes `status_bar` for the foot of the layout.
-#   - `theme` — `RatatuiThemeColors` for tab styling (kept coherent
-#     with the rest of the example-app series).
-#   - `event` — `TuiEvent` + `run_app` against the Tornado umbrella.
+# Round 8 example consuming six umbrella features together:
+#   - `log_view` — round-9 TabLog helper.
+#   - `spinner`  — global SpinnerState in the title bar.
+#   - `wrap`     — exercises the inline smoke test for `word_wrap_line`.
 #   - `hyperlink` — OSC 8 anchor rendering for the per-row URLs.
-#   - `styles` — `HyperlinkTarget` plumbing shared with TabLog.
-# `tabs` is *deliberately omitted*: round-6 vendoring of
-# `ratatui-widgets::Tabs` as `crates/tornado-tabs` has not landed,
-# so this example uses `ratatui::widgets::Tabs` directly (Path B
-# per the round-8 designer's recommendation memo). A future
-# "Round 6 catch-up" PR can funnel this through the umbrella.
+#   - `styles`   — `HyperlinkTarget` plumbing shared with TabLog.
+#   - `tabs`     — round-6 catch-up: `tornado::widget::TabNav`
+#                  replaced the round-8 Path-B direct import.
 tornado = { workspace = true, features = [
-    "log_view",     # Per-tab scroll mechanics (round-9 helper).
-    "spinner",      # Global SpinnerState in the title bar.
-    "wrap",         # `word_wrap_line` reachability smoke test.
-    "hyperlink",    # OSC 8 anchor rendering for per-row URLs.
-    "styles",       # `HyperlinkTarget` plumbing shared with TabLog.
+    "log_view",
+    "spinner",
+    "wrap",
+    "hyperlink",
+    "styles",
+    "tabs",
 ] }
 # Pattern-matching on KeyCode / KeyModifiers — not re-exported by tornado.
 crossterm = "0.28"

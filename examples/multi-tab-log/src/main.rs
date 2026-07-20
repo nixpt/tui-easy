@@ -6,7 +6,7 @@
 //! | Region   | Source                       | Role                                                       |
 //! |----------|------------------------------|------------------------------------------------------------|
 //! | Title    | `tornado-spinner`            | Global `SpinnerState` driven by `Tick`-elapsed time        |
-//! | TabNav   | `ratatui::widgets::Tabs`     | 3-row band of 5 stream titles + active-tab chevron         |
+//! | TabNav   | `tornado::widget::TabNav`    | 3-row band of 5 stream titles + active-tab chevron         |
 //! | Body     | `tornado::tab_log::TabLog`   | Active tab's `render_pair()` driving the scroll viewport   |
 //! | Footer   | `tornado::widget`            | `status_bar` with offset + top-anchor on the active tab    |
 //!
@@ -22,7 +22,7 @@
 //! | D6 | Tests | 6 inline `TestBackend` smoke tests |
 //! | D7 | Tabs styling | `Style::dim()` inactive, `Style::fg(Cyan).bold()` active |
 //! | D8 | Module split | `main.rs` (orchestration) + `tab_log.rs` (seeders) |
-//! | D9 | Cargo wiring | Path B: 5-feature tornado + crossterm + ratatui direct |
+//! | D9 | Cargo wiring | 6-feature tornado (round 6 catch-up: `TabNav` via umbrella) |
 //!
 //! ## Hazards carried forward (from `.dejavue` collision captures)
 //!
@@ -38,6 +38,25 @@
 //! 3. **`word_wrap_line` lifetime** — the `smoke_wrap_helper_reachable`
 //!    test only invokes the helper in an ephemeral scope; the live
 //!    rebuild pipeline does *not* call wrap, so the lifetime is moot.
+//!
+//! ## Round 6 catch-up re-route (this turn)
+//!
+//! The round-8 example originally consumed `ratatui::widgets::Tabs`
+//! directly (`Path B` per the round-8 design memo), because round-6
+//! vendoring had not landed. Round 6 catch-up has now landed:
+//! `crates/tornado-tabs` mirrors the public `TabNav` / `TabsState`
+//! widget from `ratatui` 0.30, the umbrella's `tabs` feature gates
+//! it, and `tornado::widget::TabNav` re-exports the type under a
+//! semantic alias.
+//!
+//! This file is the round-6 catch-up example consumer: the only
+//! visible change relative to round 8 is the import swap below
+//! (`use ratatui::widgets::{Paragraph, Tabs};` →
+//! `use ratatui::widgets::Paragraph; use tornado::widget::TabNav;`)
+//! and the constructor call (`Tabs::new(...)` → `TabNav::new(...)`).
+//! The builder chain (`.select(...)`, `.divider(...)`, `.style(...)`,
+//! `.highlight_style(...)`) is identical because the vendored widget
+//! mirrors upstream 1:1.
 //!
 //! # Run it
 //!
@@ -58,7 +77,8 @@ use std::time::{Duration, Instant};
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 use ratatui::layout::{Constraint, Direction, Layout};
 use ratatui::text::{Line, Span};
-use ratatui::widgets::{Paragraph, Tabs};
+use ratatui::widgets::Paragraph;
+use tornado::widget::TabNav;
 
 /// Inline-test-only imports — gated so `cargo build` stays clean.
 #[cfg(test)]
@@ -291,14 +311,13 @@ impl TuiApp for MultiTabApp {
             title_area,
         );
 
-        // ── TabNav: ratatui::widgets::Tabs (Path B — round-6 vendoring
-        //    of `ratatui-widgets::Tabs` as `crates/tornado-tabs` has
-        //    not landed; this example uses the upstream type
-        //    directly so the consumer compiles against the available
-        //    ratatui 0.30 surface). Styling is theme-adjacent: dim
-        //    inactive titles, cyan + bold for the active one, dim
-        //    divider.
-        let tabs_widget = Tabs::new(
+        // ── TabNav: tornado::widget::TabNav (round-6 catch-up —
+        //    `crates/tornado-tabs` mirrors `ratatui::widgets::Tabs`
+        //    verbatim; the umbrella surfaces it under the semantic
+        //    alias `TabNav` so consumers don't have to remember
+        //    whether the source widget is named Tabs or TabNav).
+        //    The builder chain mirrors upstream 1:1.
+        let tabs_widget = TabNav::new(
             TAB_TITLES
                 .iter()
                 .copied()
