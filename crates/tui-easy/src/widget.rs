@@ -19,6 +19,15 @@ pub use crate::scroller::ScrollView;
 // StatefulWidget.)
 #[cfg(feature = "tabs")]
 pub use crate::tabs::Tabs as TabNav;
+// Round 10: the vendored `Sparkline` + `SparklineBar` widgets
+// surface via the umbrella's `sparkline` feature. No semantic
+// alias needed (unlike the round-6 catch-up `Tabs as TabNav`
+// rename) because `Sparkline` is already the canonical upstream
+// verb and consumers reach it directly. The `SparklineBar` is
+// also exposed because `Sparkline::bar_set(SparklineBar)` is the
+// only way to override the default `"█"` symbol.
+#[cfg(feature = "sparkline")]
+pub use crate::sparkline::{Sparkline, SparklineBar};
 #[cfg(feature = "styles")]
 use crate::styles::Style as AnsiStyle;
 
