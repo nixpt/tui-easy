@@ -1,0 +1,72 @@
+[package]
+name = "tornado"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+description = "Shared terminal UI shell — terminal init, event loop, themes, widgets"
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+categories = ["command-line-interface"]
+
+[dependencies]
+crossterm = "0.28"
+ratatui = "0.30"
+tracing = "0.1"
+# Optional — small ANSI/ratatui bridge helpers + HyperlinkTarget type,
+# borrowed from xai-grok-markdown. Only added when the `styles` feature
+# is enabled, so consumers that don't need them don't pay for them.
+tornado-styles = { workspace = true, optional = true }
+# Optional — textwrap word-wrap helpers over ratatui Line/Span,
+# borrowed from xai-ratatui-textarea. Gated behind the `wrap` feature
+# (and pulls in `textwrap` transitively).
+tornado-wrap = { workspace = true, optional = true }
+# Optional — OSC 8 hyperlink widget for ratatui, vendored from hyperrat
+# (dual MIT/Unlicense). Gated behind the `hyperlink` feature.
+tornado-hyperlink = { workspace = true, optional = true }
+# Optional — bubbletea-inspired spinner widget for ratatui, vendored from
+# ratatui-cheese (MIT). Gated behind the `spinner` feature. The widget's
+# `SpinnerState::tick(Duration)` accepts the elapsed time of one
+# `run_app` loop iteration (the `tick_rate`) and advances frames at the
+# cadence defined by `SpinnerType::interval`.
+tornado-spinner = { workspace = true, optional = true }
+# Optional — stateful scrolling view for ratatui, vendored from
+# tui-scrollview v0.6.7 (Josh McKinney, dual MIT/Apache-2.0). Gated
+# behind the `scroller` feature. Renders a buffer larger than the
+# viewport, lets the user scroll offset / page, and renders the visible
+# slice with optional scrollbars. See crates/tornado-scrollview/NOTICE
+# for the upstream -> arniko path migration.
+tornado-scrollview = { workspace = true, optional = true }
+
+[features]
+default = []
+styles = ["dep:tornado-styles"]
+wrap = ["dep:tornado-wrap"]
+hyperlink = ["dep:tornado-hyperlink"]
+spinner = ["dep:tornado-spinner"]
+scroller = ["dep:tornado-scrollview"]
+
+# Integration tests — each gated on the feature it exercises, so
+# consumers who don't enable that feature don't pay for the test
+# (and the test's dependencies).
+
+# tornado-styles: round-1 anstyle -> ratatui roundtrip.
+[[test]]
+name = "styles_integration"
+required-features = ["styles"]
+
+# tornado-hyperlink: OSC 8 encoding reach-through (cell 0 prefix).
+[[test]]
+name = "hyperlink_integration"
+required-features = ["hyperlink"]
+
+# tornado-spinner: frame advance via tick + StatefulWidget render path.
+[[test]]
+name = "spinner_integration"
+required-features = ["spinner"]
+
+# tornado-scrollview: offset advance + scrollbar visibility policy +
+# viewport slicing through `tornado::scroller` re-export.
+[[test]]
+name = "scrollview_integration"
+required-features = ["scroller"]

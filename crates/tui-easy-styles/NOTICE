@@ -1,0 +1,20 @@
+tornado-styles
+
+Portions of this crate are derived from first-party code in the
+xai-grok-markdown crate, part of xAI's Grok build (grok-build) project.
+
+Original source:
+  Repository: https://github.com/xai-org/grok-build
+  File path:  crates/codegen/xai-grok-markdown/src/render.rs
+              crates/codegen/xai-grok-markdown/src/output.rs
+  Copyright:  2023-2026 xAI
+  License:    Apache License, Version 2.0
+
+Only the smallest reusable surface was lifted out:
+  - anstyle::Color → ratatui::style::Color  (fn anstyle_to_ratatui_color)
+  - anstyle::Style → ratatui::style::Style  (fn style_into_ratatui)
+  - HyperlinkTarget struct                  (OSC 8 link anchor)
+
+See LICENSE-APACHE in this crate for the full license text. The
+xai-grok-markdown crate does not redistribute any third-party source itself;
+its NOTICE file at the upstream repository documents its own dependencies.

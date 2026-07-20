@@ -1,0 +1,27 @@
+tornado-wrap
+
+Portions of this crate are derived from first-party code in the
+xai-ratatui-textarea crate, part of xAI's Grok build (grok-build) project.
+
+Original source:
+  Repository: https://github.com/xai-org/grok-build
+  File path:  crates/codegen/xai-ratatui-textarea/src/wrapping.rs
+  Copyright:  2023-2026 xAI
+  License:    Apache License, Version 2.0
+
+Only the smallest reusable surface was lifted out:
+  - RtOptions<'a>                       — ergonomic builder around textwrap::Options
+  - word_wrap_line(line, opts)          — wrap one Line, preserve span styles + indents
+  - word_wrap_lines_borrowed(lines, opts) — wrap an iterator of Lines, keep borrows
+  - wrap_ranges / wrap_ranges_trim      — raw byte-range helpers from textwrap
+  - private slice_line_spans            — internal span-aware slice helper
+
+The `word_wrap_lines` function and `push_owned_lines` helpers in the original
+were NOT taken: `word_wrap_lines` collapses to owned Line<'static> via an
+internal helper defined in another module of xai-ratatui-textarea, which is
+outside the wrap-only debris surface. Use `word_wrap_lines_borrowed` and
+`.into_iter()` if you need an owned Vec<Line<'static>>.
+
+See LICENSE-APACHE in this crate for the full license text. The
+xai-ratatui-textarea crate does not redistribute any third-party source itself;
+its NOTICE file at the upstream repository documents its own dependencies.
