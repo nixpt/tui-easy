@@ -1,46 +1,41 @@
 //! End-to-end consumer of every borrow-debris sibling shipped in tornado.
 //!
-//! This is round 7 of the awesome-ratatui adoption series in arniko.
-//! It is the first example that wires together all five vendored widgets
-//! into a single [`TuiApp`]:
+//! Round 7 wired five vendored siblings into a single [`TuiApp`]. Round 9
+//! refactored the per-tab scroll log mechanics (`rows` registry, OSC-8
+//! anchor assignment, `ScrollView` + `ScrollViewState`, rebuild loop,
+//! `top_anchor` lookup, `pinned_to_bottom` tracking) into a shared
+//! primitive: `tornado::tab_log::TabLog` (behind the `log_view`
+//! umbrella feature). This file is now a thin orchestrator on top of
+//! that helper.
 //!
-//! | Widget        | Source crate          | Where it appears in this app               |
-//! |---------------|-----------------------|--------------------------------------------|
-//! | `Spinner`     | `tornado-spinner`     | title bar (animated async-work indicator) |
-//! | `ScrollView`  | `tornado-scrollview`  | body (virtual log, scrollable)             |
-//! | `HyperlinkTarget` | `tornado-styles`  | per-row OSC 8 anchor (id + url)            |
-//! | `Link`        | `tornado-hyperlink`   | rendered anchor surface (round 3 widget)   |
-//! | word-wrapping | `tornado-wrap`        | long-title wrap on narrow terminals        |
-//! | `status_bar`  | `tornado::widget`     | footer (round 1 theme bridge)              |
+//! ## Composition (after round 9)
 //!
-//! The composition model is: per-tick `update()` advances the spinner
-//! and queues new log rows; per-event `handle_event()` maps j/k/PgUp/
-//! PgDn/g/G/Esc/q/Ctrl-c onto scroll + quit; `draw()` splits the frame
-//! into a 1-line title, a body `Rect` that holds the scroll-view
-//! viewport, and a 2-line footer with a top-border.
-//
+//! | Region   | Source crate        | Surface in app                                            |
+//! |----------|---------------------|-----------------------------------------------------------|
+//! | Title    | `tornado-spinner`   | animated `SpinnerState` driven by `Tick`-elapsed time     |
+//! | Body     | `tornado::tab_log`  | `TabLog::scroll_view()` + `TabLog::scroll_state_mut()`    |
+//! | Rows     | `tornado::tab_log`  | per-row OSC-8 anchor registry + top-of-viewport lookup    |
+//! | Footer   | `tornado::widget`   | block-bordered `status_bar` reading offset + top anchor   |
+//! | Wrap     | `tornado-wrap`      | `word_wrap_line` exercised in the inline smoke test       |
+//!
 //! # Run it
-//
+//!
 //! ```sh
 //! cargo run -p scroll-log
 //! ```
-//
+//!
 //! # Smoke test
-//
+//!
 //! ```sh
 //! cargo test -p scroll-log
 //! ```
-//
-//! The smoke tests skip the real terminal loop and drive `update()`,
-//! `handle_event()`, and `draw()` against a [`ratatui::backend::TestBackend`]
-//! so the entire composition can be exercised in CI.
 
 #![allow(clippy::module_name_repetitions)]
 
 use std::time::{Duration, Instant};
 
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
-use ratatui::layout::{Constraint, Direction, Layout, Rect, Size};
+use ratatui::layout::{Constraint, Direction, Layout};
 use ratatui::text::{Line, Span};
 use ratatui::widgets::Paragraph;
 
@@ -56,24 +51,19 @@ use ratatui::buffer::Buffer;
 use ratatui::layout::Position;
 
 use tornado::event::TuiEvent;
-use tornado::scroller::{ScrollView, ScrollViewState, ScrollbarVisibility};
 use tornado::spinner::{SpinnerState, SpinnerType};
-use tornado::styles::HyperlinkTarget;
+use tornado::tab_log::TabLog;
 use tornado::theme::RatatuiThemeColors;
 use tornado::widget::status_bar;
 use tornado::{run_app, TuiApp};
 
 // ── Constants ─────────────────────────────────────────────────────────────
 
-/// Vertical resolution of the virtual log buffer. Each new tick can
-/// append a row; the buffer keeps growing until the textarea/paragraph
-/// inside ScrollView runs out of room (it never does at this size for a
-/// real session).
+/// Vertical resolution of the virtual log buffer. Picked to comfortably
+/// hold a long session of work without scrollback exhaustion.
 const SCROLL_BUF_LINES: u16 = 240;
 
-/// Column width of the virtual log buffer. Long rows are word-wrapped
-/// to fit using `tornado::wrap::word_wrap_line` before pushing into
-/// the buffer.
+/// Column width of the virtual log buffer.
 const SCROLL_WIDTH: u16 = 96;
 
 /// Run-loop tick rate. `SpinnerState::tick(Duration)` accepts the
@@ -86,12 +76,14 @@ const TASK_COMPLETE_EVERY: u32 = 5;
 
 // ── Domain types ──────────────────────────────────────────────────────────
 
+/// Log severity level — mapped to a static `category` string the
+/// `TabLog` helper consumes. Only the variants the example actually
+/// emits are listed; `WARN`/`ERROR` are deliberately omitted (the
+/// round-9 simplify pass dropped them after a code-review found them
+/// unused).
 #[derive(Debug, Clone, Copy)]
-#[allow(dead_code)] // Warn / Error are demonstration slots; the seed only uses Info / Done.
 enum Level {
     Info,
-    Warn,
-    Error,
     Done,
 }
 
@@ -99,39 +91,23 @@ impl Level {
     fn label(self) -> &'static str {
         match self {
             Self::Info => "INFO ",
-            Self::Warn => "WARN ",
-            Self::Error => "ERROR",
             Self::Done => "DONE ",
         }
     }
 }
 
-#[derive(Debug, Clone)]
-struct LogRow {
-    timestamp: String,
-    level: Level,
-    msg: String,
-    /// When set, this row emits an OSC 8 hyperlink and registers a
-    /// [`HyperlinkTarget`] anchored to its line index. The status bar
-    /// reads the top-of-viewport one out and shows its id.
-    url: Option<String>,
-    anchor_id: u32,
-}
-
 // ── The app ───────────────────────────────────────────────────────────────
 
+/// Thin shell around `TabLog` + `SpinnerState`. Round 9 removed every
+/// field that round-7 carried for the per-tab scroll mechanics — the
+/// `TabLog` helper now owns those.
 struct ScrollLogApp {
-    rows: Vec<LogRow>,
-    hyperlinks: Vec<HyperlinkTarget>,
-    scroll_view: ScrollView,
-    scroll_state: ScrollViewState,
+    log: TabLog,
     spinner_state: SpinnerState,
     tasks_running: usize,
     tasks_complete: usize,
-    pinned_to_bottom: bool,
     last_tick: Instant,
     tick_count: u32,
-    next_anchor_id: u32,
     quit: bool,
     theme: RatatuiThemeColors,
 }
@@ -139,18 +115,12 @@ struct ScrollLogApp {
 impl ScrollLogApp {
     fn new() -> Self {
         let mut app = Self {
-            rows: Vec::new(),
-            hyperlinks: Vec::new(),
-            scroll_view: ScrollView::new(Size::new(SCROLL_WIDTH, SCROLL_BUF_LINES))
-                .scrollbars_visibility(ScrollbarVisibility::Always),
-            scroll_state: ScrollViewState::new(),
+            log: TabLog::new(SCROLL_WIDTH, SCROLL_BUF_LINES),
             spinner_state: SpinnerState::new(SpinnerType::Dot),
             tasks_running: 4,
             tasks_complete: 0,
-            pinned_to_bottom: true,
             last_tick: Instant::now(),
             tick_count: 0,
-            next_anchor_id: 1,
             quit: false,
             theme: tornado::theme::ThemeColors::default().to_ratatui(),
         };
@@ -177,74 +147,22 @@ impl ScrollLogApp {
         // Build the scroll-view buffer once upfront so the very first
         // `draw()` renders the seeded rows. Without this, the buffer
         // is still `Buffer::empty(...)` and the viewport paints blank.
-        app.rebuild_buffer();
+        app.log.rebuild_buffer();
 
         app
     }
 
-    /// Append a new log row + (optionally) a linked anchor.
+    /// Append a new log row + (optionally) a linked anchor. The
+    /// `Level` enum maps to a static `category` string the helper
+    /// consumes; the actual `LogRow`, the `anchor_id`, and the OSC 8
+    /// entry live inside `TabLog`.
     fn push_row(&mut self, msg: String, level: Level, url: Option<String>) {
-        let id = self.next_anchor_id;
-        self.next_anchor_id = self.next_anchor_id.wrapping_add(1);
-        self.rows.push(LogRow {
-            timestamp: format_ts(),
-            level,
-            msg,
-            url,
-            anchor_id: id,
-        });
+        self.log
+            .push_row(format_ts(), level.label().to_string(), msg, url);
     }
 
-    /// Scroll to the bottom if the user has not manually unpinned.
     fn reset_to_bottom_if_pinned(&mut self) {
-        if self.pinned_to_bottom {
-            // Treat the buffer as exactly `SCROLL_BUF_LINES` rows tall;
-            // setting offset.y to that value is well beyond what the
-            // ScrollView clamps internally, which is exactly what the
-            // `scroll_to_bottom()` helper does.
-            self.scroll_state.scroll_to_bottom();
-        }
-    }
-
-    /// Re-render all rows into the internal scroll-view buffer.
-    ///
-    /// `tornado::wrap::word_wrap_line` is exercised end-to-end in
-    /// `smoke_wrap_helper_reachable` below; this method keeps the
-    /// per-row line an owned `'static` so the `Vec<Line>` can be
-    /// pushed across iterations and rendered.
-    fn rebuild_buffer(&mut self) {
-        let mut lines: Vec<Line<'static>> = Vec::new();
-        let mut hyperlinks: Vec<HyperlinkTarget> = Vec::new();
-
-        for row in self.rows.iter() {
-            let raw = format!("[{}] {} {}", row.timestamp, row.level.label(), row.msg);
-            let start_line = lines.len();
-            lines.push(Line::raw(raw.clone()));
-
-            if let Some(url) = &row.url {
-                hyperlinks.push(HyperlinkTarget {
-                    line_index: start_line,
-                    column_range: 0..raw.len(),
-                    url: url.clone(),
-                    id: row.anchor_id,
-                });
-            }
-        }
-
-        self.hyperlinks = hyperlinks;
-        self.scroll_view
-            .render_widget(Paragraph::new(lines), Rect::new(0, 0, SCROLL_WIDTH, SCROLL_BUF_LINES));
-    }
-
-    /// Returns the OSC 8 anchor visible at the top of the viewport,
-    /// if any. The user's request reads "hyperlink rows anchored to
-    /// scroll offset"; this is the concrete mechanism: as the user
-    /// scrolls, the top anchor id changes, and the status bar shows it.
-    fn top_anchor(&self) -> Option<&HyperlinkTarget> {
-        let y = self.scroll_state.offset().y as usize;
-        self.hyperlinks
-            .iter()
-            .find(|target| target.line_index == y)
+        self.log.reset_to_bottom_if_pinned();
     }
 }
 
@@ -282,7 +200,7 @@ impl TuiApp for ScrollLogApp {
         }
 
         self.reset_to_bottom_if_pinned();
-        self.rebuild_buffer();
+        self.log.rebuild_buffer();
     }
 
     fn handle_event(&mut self, event: TuiEvent) {
@@ -308,43 +226,50 @@ impl TuiApp for ScrollLogApp {
                 code: KeyCode::Down | KeyCode::Char('j'),
                 ..
             }) => {
-                self.scroll_state.scroll_down();
-                self.pinned_to_bottom = self.scroll_state.is_at_bottom();
+                // Two-step borrow: evaluate the inner `is_at_bottom()`
+                // first so `set_pinned(receiver)` and the inner
+                // `scroll_state_mut()` do not collide on `&mut self.log`
+                // (round-9 E0499 fix from the compiler's diagnostic).
+                let at_bottom = self.log.scroll_state_mut().is_at_bottom();
+                self.log.scroll_state_mut().scroll_down();
+                self.log.set_pinned(at_bottom);
             }
             TuiEvent::Key(KeyEvent {
                 code: KeyCode::Up | KeyCode::Char('k'),
                 ..
             }) => {
-                self.scroll_state.scroll_up();
-                self.pinned_to_bottom = false;
+                self.log.scroll_state_mut().scroll_up();
+                self.log.set_pinned(false);
             }
             TuiEvent::Key(KeyEvent {
                 code: KeyCode::PageDown,
                 ..
             }) => {
-                self.scroll_state.scroll_page_down();
-                self.pinned_to_bottom = self.scroll_state.is_at_bottom();
+                // Same two-step pattern as the Down/`j` arm — see note there.
+                let at_bottom = self.log.scroll_state_mut().is_at_bottom();
+                self.log.scroll_state_mut().scroll_page_down();
+                self.log.set_pinned(at_bottom);
             }
             TuiEvent::Key(KeyEvent {
                 code: KeyCode::PageUp,
                 ..
             }) => {
-                self.scroll_state.scroll_page_up();
-                self.pinned_to_bottom = false;
+                self.log.scroll_state_mut().scroll_page_up();
+                self.log.set_pinned(false);
             }
             TuiEvent::Key(KeyEvent {
                 code: KeyCode::End | KeyCode::Char('G'),
                 ..
             }) => {
-                self.scroll_state.scroll_to_bottom();
-                self.pinned_to_bottom = true;
+                self.log.scroll_state_mut().scroll_to_bottom();
+                self.log.set_pinned(true);
             }
             TuiEvent::Key(KeyEvent {
                 code: KeyCode::Home | KeyCode::Char('g'),
                 ..
             }) => {
-                self.scroll_state.scroll_to_top();
-                self.pinned_to_bottom = false;
+                self.log.scroll_state_mut().scroll_to_top();
+                self.log.set_pinned(false);
             }
 
             _ => {}
@@ -380,29 +305,42 @@ impl TuiApp for ScrollLogApp {
                 "scroll-log │ {} running │ {} complete │ {} rows",
                 self.tasks_running,
                 self.tasks_complete,
-                self.rows.len(),
+                self.log.row_count(),
             )),
         ]);
         frame.render_widget(Paragraph::new(title_left), title_area);
 
-        // ── Body: the scroll view's viewport ─────────────────────────
-        frame.render_stateful_widget(&self.scroll_view, body_area, &mut self.scroll_state);
+        // ── Body: the TabLog scroll view's viewport ──────────────────
+        // `render_pair()` returns disjoint-borrowed refs into the
+        // same `&mut TabLog` so we can hand both to render_stateful_widget
+        // without triggering an E0502.
+        let pair = self.log.render_pair();
+        frame.render_stateful_widget(pair.view, body_area, pair.state);
 
         // ── Footer: status_bar with scroll position + top anchor ────
         let anchor_part = self
+            .log
             .top_anchor()
             .map(|t| format!("anchor #{:04}", t.id))
             .unwrap_or_else(|| "anchor (none)".to_string());
 
+        let scroll_state_y = {
+            let s = self.log.scroll_state_mut();
+            s.offset().y
+        };
         let left_line = format!(
             " y={} │ {} │ j/k ↓/↑ · PgUp/PgDn · g/G · q",
-            self.scroll_state.offset().y, anchor_part,
+            scroll_state_y, anchor_part,
         );
         let right_line = format!(
             "{} rows │ frame {}{}",
-            self.rows.len(),
+            self.log.row_count(),
             self.spinner_state.frame(),
-            if self.pinned_to_bottom { "" } else { " │ unpinned" },
+            if self.log.is_pinned() {
+                ""
+            } else {
+                " │ unpinned"
+            },
         );
 
         frame.render_widget(
@@ -414,7 +352,7 @@ impl TuiApp for ScrollLogApp {
 
 // ── Boot ──────────────────────────────────────────────────────────────────
 
-pub fn main() -> std::io::Result<()> {
+fn main() -> std::io::Result<()> {
     let app = ScrollLogApp::new();
     run_app(app, TICK_RATE)
 }
@@ -454,8 +392,7 @@ mod tests {
         let mut app = fresh_app();
         let buf = render_once(&mut app, 120, 24);
 
-        // Title row should contain the spinner frame glyph plus the
-        // counter text. Convert row 0 to a String and check substrings.
+        // Title row check.
         let mut title_line = String::new();
         for x in 0..buf.area.width {
             title_line.push_str(buf[(x, 0)].symbol());
@@ -473,7 +410,7 @@ mod tests {
             "title row missing initial complete-counter: {title_line:?}"
         );
 
-        // Footer should contain the row-count + spinner frame index.
+        // Footer check.
         let mut footer_line = String::new();
         for x in 0..buf.area.width {
             footer_line.push_str(buf[(x, buf.area.height - 1)].symbol());
@@ -487,8 +424,7 @@ mod tests {
             "footer missing spinner-frame index: {footer_line:?}"
         );
 
-        // Body region must have at least one of the seeded log rows
-        // visible. The first seeded row was "workspace loaded".
+        // Body region check.
         let mut body_text = String::new();
         for y in 1..buf.area.height.saturating_sub(1) {
             for x in 0..buf.area.width {
@@ -511,21 +447,16 @@ mod tests {
             app.update();
         }
 
-        // TASK_COMPLETE_EVERY = 5, so after 6 ticks exactly one task
-        // should have completed and the seeded "task #1 complete"
-        // row should be present.
         assert_eq!(app.tasks_complete, 1, "expected 1 task to complete");
         assert_eq!(app.tasks_running, 3, "expected 3 tasks still running");
 
         // After 6 ticks the app is pinned-to-bottom of the 240-row
-        // virtual log buffer, but only 6 rows are populated (so the
-        // viewport over the empty tail shows nothing). Unpin and scroll
-        // to the top so the viewport lines up over the populated prefix
-        // and the freshly appended "task #1 complete" row is visible.
-        app.pinned_to_bottom = false;
-        app.scroll_state.scroll_to_top();
+        // virtual log buffer, but only 6 rows are populated. Unpin and
+        // scroll to the top so the viewport lines up over the populated
+        // prefix.
+        app.log.set_pinned(false);
+        app.log.scroll_state_mut().scroll_to_top();
 
-        // Render and confirm the new row appears in the body.
         let buf = render_once(&mut app, 120, 24);
         let mut body_text = String::new();
         for y in 1..buf.area.height.saturating_sub(1) {
@@ -542,17 +473,20 @@ mod tests {
     #[test]
     fn smoke_top_anchor_shifts_with_scroll_offset() {
         let mut app = fresh_app();
-        app.rebuild_buffer();
+        app.log.rebuild_buffer();
 
         // Initially at top → anchor #1 (the very first seeded row).
-        assert_eq!(app.scroll_state.offset(), Position::new(0, 0));
-        let top = app.top_anchor().expect("anchor at offset y=0");
+        assert_eq!(
+            app.log.scroll_state_mut().offset(),
+            Position::new(0, 0)
+        );
+        let top = app.log.top_anchor().expect("anchor at offset y=0");
         assert_eq!(top.id, 1, "expected anchor #1 at the top of viewport");
         assert_eq!(top.line_index, 0);
 
         // Scroll one line down → anchor should now be the second row.
-        app.scroll_state.scroll_down();
-        let top = app.top_anchor().expect("anchor at offset y=1");
+        app.log.scroll_state_mut().scroll_down();
+        let top = app.log.top_anchor().expect("anchor at offset y=1");
         assert_eq!(top.id, 2, "expected anchor #2 after one scroll_down");
     }
 
@@ -578,28 +512,26 @@ mod tests {
     #[test]
     fn smoke_scroll_state_responds_to_navigation_keys() {
         let mut app = fresh_app();
-        assert!(app.pinned_to_bottom);
+        assert!(app.log.is_pinned(), "default is pinned-to-bottom");
 
         app.handle_event(TuiEvent::Key(KeyEvent::new(KeyCode::Char('k'), KeyModifiers::NONE)));
-        assert!(!app.pinned_to_bottom, "k should unpin from bottom");
+        assert!(!app.log.is_pinned(), "k should unpin from bottom");
 
         app.handle_event(TuiEvent::Key(KeyEvent::new(
             KeyCode::End,
             KeyModifiers::NONE,
         )));
-        assert!(app.pinned_to_bottom, "End should re-pin to bottom");
+        assert!(app.log.is_pinned(), "End should re-pin to bottom");
 
         app.handle_event(TuiEvent::Key(KeyEvent::new(KeyCode::PageUp, KeyModifiers::NONE)));
-        assert!(!app.pinned_to_bottom, "PageUp should unpin");
+        assert!(!app.log.is_pinned(), "PageUp should unpin");
     }
 
     #[test]
     fn smoke_wrap_helper_reachable() {
-        // Round 2: `word_wrap_line` accepting a borrowed `Line` and a
-        // `RtOptions`. The function takes `Into<RtOptions>` (not `&RtOptions`),
-        // so ownership is moved into the call. This is a reachability +
-        // length sanity check, not a deep semantic test of the upstream
-        // library.
+        // Round 2: `word_wrap_line` accepting a borrowed `Line` and an
+        // owned `RtOptions`. This is a reachability + length sanity
+        // check, not a deep semantic test of the upstream library.
         let line = Line::raw("the quick brown fox jumps over the lazy dog and keeps running");
         let wrapped = tornado::wrap::word_wrap_line(&line, tornado::wrap::RtOptions::new(20));
         assert!(

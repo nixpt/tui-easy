@@ -14,24 +14,20 @@ name = "scroll-log"
 path = "src/main.rs"
 
 [dependencies]
-# The umbrella — pulling all five borrow-debris sibling cargo features.
-# This is the first end-to-end consumer that exercises the entire
-# shipped crate set as a single TuiApp.
-#
-# Path-only (no `workspace = true`) to sidestep the version mismatch
-# between tornado's declared `0.1.0` and the workspace's `0.2.99`
-# pin — the same path is resolved, but path-deps do not trigger the
-# workspace SemVer check.
-tornado = { path = "../../crates/tornado", features = [
-    "styles",
-    "wrap",
-    "hyperlink",
+# Round 9 — the per-tab scroll mechanics come from
+# `tornado::tab_log::TabLog`, gated behind the `log_view` umbrella
+# feature (which transitively pulls in styles + scroller + wrap).
+# `spinner` is declared explicitly because the title bar still
+# drives a `SpinnerState` directly. `wrap` is in because the inline
+# smoke test exercises `tornado::wrap::word_wrap_line` directly;
+# without enabling the feature, the `#[cfg(test)] mod tests` path
+# fails to compile with E0433.
+tornado = { workspace = true, features = [
+    "log_view",
     "spinner",
-    "scroller",
+    "wrap",
 ] }
 # Pattern-matching on KeyCode / KeyModifiers — not re-exported by tornado.
-# Declared directly (not via workspace) to avoid pinning the
-# workspace-level manifest.
 crossterm = "0.28"
 # ratatui's TestBackend is in the default feature set, but the example
 # declares the dep explicitly so it shows up in `cargo tree` for the
