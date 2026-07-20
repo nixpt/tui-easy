@@ -3,6 +3,15 @@ pub mod terminal;
 pub mod theme;
 pub mod widget;
 
+// Round 9 — the `TabLog` primitive (per-tab scroll log + anchor
+// registry + offset preservation). Lives behind the `log_view`
+// umbrella feature, which pulls in `tornado-styles` (for
+// `HyperlinkTarget`), `tornado-scrollview` (for `ScrollView` and
+// `ScrollViewState`), and `tornado-wrap` (for `tornado::wrap::word_wrap_line`
+// consumers — exercised in tests, not in the helper body itself).
+#[cfg(feature = "log_view")]
+pub mod tab_log;
+
 #[cfg(feature = "styles")]
 pub use tornado_styles as styles;
 

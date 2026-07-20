@@ -1,6 +1,6 @@
 [package]
 name = "tornado"
-version = "0.1.0"
+version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 description = "Shared terminal UI shell — terminal init, event loop, themes, widgets"
@@ -32,10 +32,7 @@ tornado-hyperlink = { workspace = true, optional = true }
 tornado-spinner = { workspace = true, optional = true }
 # Optional — stateful scrolling view for ratatui, vendored from
 # tui-scrollview v0.6.7 (Josh McKinney, dual MIT/Apache-2.0). Gated
-# behind the `scroller` feature. Renders a buffer larger than the
-# viewport, lets the user scroll offset / page, and renders the visible
-# slice with optional scrollbars. See crates/tornado-scrollview/NOTICE
-# for the upstream -> arniko path migration.
+# behind the `scroller` feature.
 tornado-scrollview = { workspace = true, optional = true }
 
 [features]
@@ -45,6 +42,17 @@ wrap = ["dep:tornado-wrap"]
 hyperlink = ["dep:tornado-hyperlink"]
 spinner = ["dep:tornado-spinner"]
 scroller = ["dep:tornado-scrollview"]
+# Round 9: aggregate log-building primitives from the three vendored
+# sub-crates. Exposes `tornado::tab_log::TabLog` — the per-tab scroll
+# log primitive lifted out of round-7's ScrollLogApp. Use cases:
+# a multi-tab TuiApp (round 8), a single-pane log viewer with OSC 8
+# anchors, anything else that wants a virtual-scroll log behind a
+# status-bar surface.
+log_view = [
+    "dep:tornado-styles",
+    "dep:tornado-scrollview",
+    "dep:tornado-wrap",
+]
 
 # Integration tests — each gated on the feature it exercises, so
 # consumers who don't enable that feature don't pay for the test
@@ -70,3 +78,8 @@ required-features = ["spinner"]
 [[test]]
 name = "scrollview_integration"
 required-features = ["scroller"]
+
+# Round 9: TabLog unit-tests live inside `crates/tornado/src/tab_log.rs`
+# (inline `#[cfg(test)] mod tests`). Per design-memo D4 the helper is
+# exercised at module level rather than as a separate integration
+# binary, mirroring every vendored sibling crate's own test layout.
