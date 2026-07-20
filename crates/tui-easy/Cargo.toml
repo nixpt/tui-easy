@@ -34,6 +34,11 @@ tornado-spinner = { workspace = true, optional = true }
 # tui-scrollview v0.6.7 (Josh McKinney, dual MIT/Apache-2.0). Gated
 # behind the `scroller` feature.
 tornado-scrollview = { workspace = true, optional = true }
+# Optional — Tabs widget for ratatui, vendored from
+# ratatui 0.30 itself (Florian Dehau + ratatui contributors,
+# dual MIT/Apache-2.0). Gated behind the `tabs` feature. See
+# `crates/tornado-tabs/NOTICE` for the license-mirror attribution.
+tornado-tabs = { workspace = true, optional = true }
 
 [features]
 default = []
@@ -42,6 +47,7 @@ wrap = ["dep:tornado-wrap"]
 hyperlink = ["dep:tornado-hyperlink"]
 spinner = ["dep:tornado-spinner"]
 scroller = ["dep:tornado-scrollview"]
+tabs = ["dep:tornado-tabs"]
 # Round 9: aggregate log-building primitives from the three vendored
 # sub-crates. Exposes `tornado::tab_log::TabLog` — the per-tab scroll
 # log primitive lifted out of round-7's ScrollLogApp. Use cases:

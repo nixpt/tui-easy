@@ -11,6 +11,14 @@ pub use crate::hyperlink::Link;
 pub use crate::spinner::Spinner;
 #[cfg(feature = "scroller")]
 pub use crate::scroller::ScrollView;
+// Round 6 catch-up: the vendored `Tabs` widget is available through
+// the umbrella's `tabs` feature as `tornado::widget::TabNav`. (The
+// upstream StatefulWidget impl is intentionally vendored-out at
+// 0.1 — see `crates/tornado-tabs/src/lib.rs` module-level comment;
+// `TornadoState` does not surface here until a future round resumes
+// StatefulWidget.)
+#[cfg(feature = "tabs")]
+pub use crate::tabs::Tabs as TabNav;
 #[cfg(feature = "styles")]
 use crate::styles::Style as AnsiStyle;
 
