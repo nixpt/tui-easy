@@ -45,14 +45,9 @@ pub use tui_scrollview as scroller;
 // Consumers access Sparkline via `ratatui::widgets::Sparkline` or
 // the re-export at `tornado::widget::Sparkline`.
 // No module-level `pub use` is needed — the re-export is via widget.rs.
-// Round 11 — vendored List + StatefulWidget for List + ListState from
-// ratatui 0.30 itself (dual MIT/Apache-2.0). The canonical
-// StatefulWidget vendoring precedent — BOTH trait impls vendored
-// together (no carve-out like round-6 Tabs). See
-// `crates/tornado-list/src/lib.rs` for the E0034 carve-out pattern
-// documentation.
-#[cfg(feature = "list")]
-pub use tornado_list as list;
+// Migrated: `list` feature now uses `ratatui::widgets::{List, ListState}`
+// directly (was vendored via `crates/tornado-list`, now removed).
+// The re-export is via widget.rs. No module-level `pub use` is needed.
 // Migrated from vendored `tornado-popup` to upstream
 // `tui-popup` crate (v0.7, MIT). API is identical:
 // `Popup`, `PopupState` with mouse-drag support.

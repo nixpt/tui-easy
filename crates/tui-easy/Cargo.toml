@@ -46,15 +46,11 @@ tui-scrollview = { workspace = true, optional = true }
 # always available (ratatui is a hard dep); the `sparkline` feature
 # is an empty gate for backward compatibility with existing
 # consumers that enable it. Replaces the vendored `tornado-sparkline`.
-# Optional — vendored List + StatefulWidget for List + ListState
-# from ratatui 0.30 itself (dual MIT/Apache-2.0). Gated behind the
-# `list` feature. This is the canonical StatefulWidget vendoring
-# precedent — BOTH trait impls vendored together (no carve-out
-# like round-6 Tabs). See `crates/tornado-list/NOTICE` for the
-# license-mirror attribution. Consumers access `List` and
-# `ListState` via `tornado::widget::{List, ListState}` or the
-# module re-export `tornado::list`.
-tornado-list = { workspace = true, optional = true }
+# Optional — List widget. `ratatui::widgets::{List, ListState}` are
+# always available (ratatui is a hard dep); the `list` feature is an
+# empty gate for backward compatibility. Replaces the vendored
+# `tornado-list`. Note: `List::new(items)` accepts `Vec<Text>` via
+# `Into<ListItem>`, so the consumer-facing API is identical.
 # Optional — Popup widget from the tui-popup crate (MIT).
 # A simple popup with bordered box, title, body text, and optional
 # drag-repositioning. Gated behind the `popup` feature.
@@ -95,7 +91,7 @@ sparkline = []
 # pattern (fully-qualified trait-method call for disambiguation
 # when both `Widget` and `StatefulWidget` are in scope at the
 # consumer call site).
-list = ["dep:tornado-list"]
+list = []
 # Round 12 — vendored Popup widget behind a `popup` feature.
 # A simple popup with bordered box, title, body text, and optional
 # drag-repositioning. The widget implements both `Widget` (stateless)

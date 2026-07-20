@@ -31,16 +31,15 @@ pub use ratatui::widgets::Tabs as TabNav;
 // compatibility.
 #[cfg(feature = "sparkline")]
 pub use ratatui::widgets::Sparkline;
-// Round 11 — vendored List + ListState surface via the umbrella's
-// `list` feature. Consumers reach them as
-// `tornado::widget::{List, ListState}`. The canonical
-// StatefulWidget vendoring precedent — BOTH trait impls vendored
-// together (no carve-out). Use the fully-qualified form
-// `<List as StatefulWidget>::render(list, area, buf, &mut state)`
-// when both `Widget` and `StatefulWidget` are in scope to avoid
-// E0034 — see `crates/tornado-list/src/lib.rs`.
+// Migrated: `List` and `ListState` are now re-exported from
+// `ratatui::widgets` directly. The vendored `crates/tornado-list`
+// has been removed. The native `List` accepts the same inputs
+// (`Vec<Text>` via `Into<ListItem>`) and has the same builder
+// API. The fully-qualified form `<List as StatefulWidget>::render`
+// is still the recommended disambiguation pattern when both
+// `Widget` and `StatefulWidget` are in scope (E0034 carve-out).
 #[cfg(feature = "list")]
-pub use crate::list::{List, ListState};
+pub use ratatui::widgets::{List, ListState};
 // Round 12 — vendored Popup + PopupState from joshka/tui-popup (MIT).
 // Consumers reach them as `tornado::widget::{Popup, PopupState}`.
 // The popup implements both `Widget for &Popup` and
