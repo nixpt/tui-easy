@@ -39,24 +39,16 @@
 //!    test only invokes the helper in an ephemeral scope; the live
 //!    rebuild pipeline does *not* call wrap, so the lifetime is moot.
 //!
-//! ## Round 6 catch-up re-route (this turn)
+//! ## TabNav: from vendored crate to native `ratatui::widgets::Tabs`
 //!
-//! The round-8 example originally consumed `ratatui::widgets::Tabs`
-//! directly (`Path B` per the round-8 design memo), because round-6
-//! vendoring had not landed. Round 6 catch-up has now landed:
-//! `crates/tornado-tabs` mirrors the public `TabNav` / `TabsState`
-//! widget from `ratatui` 0.30, the umbrella's `tabs` feature gates
-//! it, and `tornado::widget::TabNav` re-exports the type under a
-//! semantic alias.
-//!
-//! This file is the round-6 catch-up example consumer: the only
-//! visible change relative to round 8 is the import swap below
-//! (`use ratatui::widgets::{Paragraph, Tabs};` →
-//! `use ratatui::widgets::Paragraph; use tornado::widget::TabNav;`)
-//! and the constructor call (`Tabs::new(...)` → `TabNav::new(...)`).
-//! The builder chain (`.select(...)`, `.divider(...)`, `.style(...)`,
-//! `.highlight_style(...)`) is identical because the vendored widget
-//! mirrors upstream 1:1.
+//! `TabNav` was originally backed by a vendored `crates/tornado-tabs`
+//! mirror of `ratatui::widgets::Tabs`. Since ratatui 0.30 provides
+//! `Tabs` natively, the vendored crate was removed and `TabNav` is
+//! now a direct re-export of `ratatui::widgets::Tabs`.
+//! The constructor and builder chain (`.select(...)`, `.divider(...)`,
+//! `.style(...)`, `.highlight_style(...)`) are identical because the
+//! vendored widget mirrored upstream 1:1 and the native API is the
+//! same.
 //!
 //! # Run it
 //!

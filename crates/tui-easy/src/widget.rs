@@ -11,14 +11,15 @@ pub use crate::hyperlink::Link;
 pub use crate::spinner::Spinner;
 #[cfg(feature = "scroller")]
 pub use crate::scroller::ScrollView;
-// Round 6 catch-up: the vendored `Tabs` widget is available through
-// the umbrella's `tabs` feature as `tornado::widget::TabNav`. (The
-// upstream StatefulWidget impl is intentionally vendored-out at
-// 0.1 — see `crates/tornado-tabs/src/lib.rs` module-level comment;
-// `TornadoState` does not surface here until a future round resumes
-// StatefulWidget.)
+// Round 6 catch-up (migrated): `TabNav` is now re-exported from
+// `ratatui::widgets::Tabs` directly. The vendored `crates/tornado-tabs`
+// has been removed. The `tabs` feature is kept as an empty feature
+// gate for backward compatibility — enabling it makes `TabNav`
+// available at `tornado::widget::TabNav`. The upstream
+// StatefulWidget impl is not exposed; consumers use the standard
+// `Widget` impl (consuming) which matches the round-6 contract.
 #[cfg(feature = "tabs")]
-pub use crate::tabs::Tabs as TabNav;
+pub use ratatui::widgets::Tabs as TabNav;
 // Round 10: the vendored `Sparkline` + `SparklineBar` widgets
 // surface via the umbrella's `sparkline` feature. No semantic
 // alias needed (unlike the round-6 catch-up `Tabs as TabNav`

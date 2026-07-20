@@ -24,21 +24,22 @@ tornado-wrap = { workspace = true, optional = true }
 # Optional — OSC 8 hyperlink widget for ratatui, vendored from hyperrat
 # (dual MIT/Unlicense). Gated behind the `hyperlink` feature.
 tornado-hyperlink = { workspace = true, optional = true }
-# Optional — bubbletea-inspired spinner widget for ratatui, vendored from
-# ratatui-cheese (MIT). Gated behind the `spinner` feature. The widget's
+# Optional — bubbletea-inspired spinner widget for ratatui, from the
+# ratatui-cheese crate (MIT). Gated behind the `spinner` feature.
+# Replaces the vendored `tornado-spinner`. The widget's
 # `SpinnerState::tick(Duration)` accepts the elapsed time of one
-# `run_app` loop iteration (the `tick_rate`) and advances frames at the
-# cadence defined by `SpinnerType::interval`.
-tornado-spinner = { workspace = true, optional = true }
+# `run_app` loop iteration and advances frames at the cadence defined
+# by `SpinnerType::interval`.
+ratatui-cheese = { workspace = true, optional = true }
 # Optional — stateful scrolling view for ratatui, vendored from
 # tui-scrollview v0.6.7 (Josh McKinney, dual MIT/Apache-2.0). Gated
 # behind the `scroller` feature.
 tornado-scrollview = { workspace = true, optional = true }
-# Optional — Tabs widget for ratatui, vendored from
-# ratatui 0.30 itself (Florian Dehau + ratatui contributors,
-# dual MIT/Apache-2.0). Gated behind the `tabs` feature. See
-# `crates/tornado-tabs/NOTICE` for the license-mirror attribution.
-tornado-tabs = { workspace = true, optional = true }
+# Optional — Tabs widget for ratatui. Since ratatui 0.30
+# provides `ratatui::widgets::Tabs` natively, this feature
+# simply re-exports it as `TabNav` (no vendored dep needed).
+# The `tabs` feature is kept as an empty feature for backward
+# compatibility with existing consumers.
 # Optional — Sparkline + SparklineBar widget for ratatui,
 # vendored from ratatui 0.30 itself (dual MIT/Apache-2.0).
 # The widget is fully **stateless** — only a `Widget` impl
@@ -84,9 +85,9 @@ default = []
 styles = ["dep:tornado-styles"]
 wrap = ["dep:tornado-wrap"]
 hyperlink = ["dep:tornado-hyperlink"]
-spinner = ["dep:tornado-spinner"]
+spinner = ["dep:ratatui-cheese"]
 scroller = ["dep:tornado-scrollview"]
-tabs = ["dep:tornado-tabs"]
+tabs = []
 # Round 10 — vendored Sparkline + SparklineBar behind a
 # `sparkline` feature. The smallest surface of any vendored
 # sibling (no StatefulWidget, no SparklineState) — chosen by

@@ -21,13 +21,19 @@ pub use tornado_wrap as wrap;
 #[cfg(feature = "hyperlink")]
 pub use tornado_hyperlink as hyperlink;
 
+// Migrated from vendored `tornado-spinner` to upstream
+// `ratatui-cheese` crate (v0.7, MIT). API is identical:
+// `Spinner`, `SpinnerState`, `SpinnerType`.
 #[cfg(feature = "spinner")]
-pub use tornado_spinner as spinner;
+pub use ratatui_cheese::spinner as spinner;
 
 #[cfg(feature = "scroller")]
 pub use tornado_scrollview as scroller;
-#[cfg(feature = "tabs")]
-pub use tornado_tabs as tabs;
+// Round 6 catch-up migration: `tabs` feature now re-exports
+// `ratatui::widgets::Tabs` directly as `tornado::widget::TabNav`
+// (was vendored via `crates/tornado-tabs`, now removed).
+// The re-export lives in `widget.rs` under the `TabNav` alias —
+// no module-level `pub use` is needed here.
 // Round 10: vendored Sparkline + SparklineBar widget from ratatui
 // 0.30 itself (dual MIT/Apache-2.0). The widget is fully **stateless**
 // — no `StatefulWidget` counterpart exists upstream either — so the
