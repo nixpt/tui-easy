@@ -1,0 +1,32 @@
+[package]
+name = "tornado-showcase"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+description = "Comprehensive visual demo showcasing every tornado widget — tabs, spinner, sparkline, list, tree, popup, big-text, hyperlink, and scrollview"
+publish = false
+
+[[bin]]
+name = "tornado-showcase"
+path = "src/main.rs"
+
+[dependencies]
+# All tornado widget features enabled — this is the showcase!
+tornado = { workspace = true, features = [
+    "log_view",
+    "spinner",
+    "wrap",
+    "hyperlink",
+    "styles",
+    "tabs",
+    "sparkline",
+    "list",
+    "popup",
+    "big-text",
+    "tree",
+] }
+crossterm = "0.28"
+ratatui = { workspace = true }
