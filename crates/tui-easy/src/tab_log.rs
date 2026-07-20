@@ -1,5 +1,14 @@
 //! Per-tab virtual-scroll log primitive.
 //!
+//! Aggregates `tornado-styles` (HyperlinkTarget), `tui-scrollview` (ScrollView +
+//! ScrollViewState), and `tornado-wrap` (word-wrap helpers) behind the single
+//! `log_view` feature gate. Each [`TabLog`] owns an independent virtual-scroll
+//! buffer with OSC-8 anchor registries, pin-to-bottom tracking, and sequential
+//! anchor-ID assignment.
+//!
+//! See the [crate README](https://github.com/nixpt/arniko/blob/main/crates/tornado/README.md)
+//! for usage patterns and feature flag documentation.
+//!
 //! Lifts the round-7 `ScrollLogApp`'s per-tab mechanics — row registry,
 //! OSC-8 anchor assignment, buffer rebuild, top-of-viewport anchor
 //! lookup, and offset preservation — into a reusable primitive that

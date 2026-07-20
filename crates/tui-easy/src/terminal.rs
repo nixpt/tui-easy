@@ -1,3 +1,12 @@
+//! Terminal initialisation and restoration.
+//!
+//! [`init()`] enters raw mode, switches to the alternate screen, enables
+//! mouse capture, and installs a panic hook that guarantees terminal
+//! restoration on crash. [`restore()`] reverses everything on clean exit.
+//!
+//! Consumers should not need to call these directly — [`crate::run_app()`]
+//! handles them automatically.
+
 use crossterm::{
     event::{DisableMouseCapture, EnableMouseCapture},
     execute,

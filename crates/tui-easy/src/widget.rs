@@ -1,3 +1,32 @@
+//! Widget re-export hub.
+//!
+//! All widget types exposed by the tornado umbrella are re-exported here,
+//! gated behind their corresponding feature flags. Consumers are encouraged
+//! to import from `tornado::widget::*` rather than from the per-crate modules
+//! (`tornado::spinner`, `tornado::popup`, etc.) to keep import paths stable
+//! across upstream crate changes.
+//!
+//! ## Always-available helpers
+//!
+//! * [`status_bar`] — themed footer bar with left/right text regions.
+//! * [`table_header_style`], [`table_row_style`], [`table_row_highlight_style`] —
+//!   convenience style constructors for table rendering.
+//!
+//! ## Feature-gated re-exports
+//!
+//! | Feature | Re-exports |
+//! |---|---|
+//! | `tabs` | [`TabNav`] = `ratatui::widgets::Tabs` |
+//! | `sparkline` | [`Sparkline`] = `ratatui::widgets::Sparkline` |
+//! | `list` | [`List`], [`ListState`] = `ratatui::widgets` |
+//! | `spinner` | [`Spinner`] = `ratatui_cheese::spinner::Spinner` |
+//! | `hyperlink` | [`Link`] = `hyperrat::Link` |
+//! | `scroller` | [`ScrollView`] = `tui_scrollview::ScrollView` |
+//! | `popup` | [`Popup`], [`PopupState`] = `tui_popup` |
+//! | `big-text` | [`BigText`], [`PixelSize`] = `tui_big_text` |
+//! | `tree` | [`Tree`], [`TreeItem`], [`TreeState`], [`Flattened`] = `tui_tree_widget` |
+//! | `styles` | [`styled_span`], [`styled_line`], ANSI bridge types |
+
 #![allow(clippy::manual_is_multiple_of)]
 
 #[cfg(feature = "styles")]

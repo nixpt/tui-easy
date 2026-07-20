@@ -1,3 +1,12 @@
+//! TUI event types and polling.
+//!
+//! The event loop in [`crate::run_app()`] calls [`poll()`] each iteration
+//! with the configured tick rate. A `TuiEvent::Tick` is emitted whenever
+//! no keyboard or terminal event arrives within the timeout — this is what
+//! drives periodic redraws, spinner advances, and other time-based updates.
+//!
+//! See also [`crate::TuiApp::handle_event()`] and [`crate::TuiApp::update()`].
+
 use crossterm::event::{self, Event, KeyEvent};
 use std::time::Duration;
 

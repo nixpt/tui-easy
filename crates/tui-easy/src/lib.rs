@@ -1,3 +1,36 @@
+//! Shared terminal UI shell — terminal init, crossterm event loop, themes, and a
+//! curated palette of feature-gated ratatui widgets.
+//!
+//! See the [crate-level README](https://github.com/nixpt/arniko/blob/main/crates/tornado/README.md)
+//! for full documentation, feature flags, usage patterns, and examples.
+//!
+//! ## Quick start
+//!
+//! ```rust,no_run
+//! use std::time::Duration;
+//! use tornado::event::TuiEvent;
+//! use tornado::{run_app, TuiApp};
+//!
+//! struct MyApp { quit: bool }
+//!
+//! impl TuiApp for MyApp {
+//!     fn draw(&mut self, frame: &mut ratatui::Frame) {}
+//!     fn handle_event(&mut self, event: TuiEvent) {
+//!         if let TuiEvent::Key(k) = event {
+//!             if k.code == crossterm::event::KeyCode::Char('q') {
+//!                 self.quit = true;
+//!             }
+//!         }
+//!     }
+//!     fn should_quit(&self) -> bool { self.quit }
+//! }
+//! # fn main() -> std::io::Result<()> {
+//! run_app(MyApp { quit: false }, Duration::from_millis(80))
+//! # }
+//! ```
+
+#![doc = include_str!("../README.md")]
+
 pub mod event;
 pub mod terminal;
 pub mod theme;

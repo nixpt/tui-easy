@@ -1,3 +1,14 @@
+//! Renderer-agnostic colour themes for terminal and GUI applications.
+//!
+//! [`ThemeColors`] holds all palette colours as [`Rgb`] values so the same
+//! theme definition works for both ratatui and (future) bliss GUI UIs.
+//! Convert to the ratatui-specific representation via
+//! [`ThemeColors::to_ratatui()`], which produces a [`RatatuiThemeColors`]
+//! with `ratatui::style::Color` fields.
+//!
+//! A dark navy/cyan palette is the default [`ThemeColors::default()`]; a
+//! light variant is available via [`ThemeColors::light()`].
+
 /// An RGB colour — the renderer-agnostic representation.
 ///
 /// Convert to `ratatui::style::Color` or a GUI colour via `From`.
