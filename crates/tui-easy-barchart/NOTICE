@@ -1,0 +1,56 @@
+tornado-barchart
+Copyright 2026 The Vendoring Wrapper (arniko project)
+
+This product includes software developed at
+The Ratatui Developers (https://github.com/ratatui/ratatui).
+
+==============================================================================
+Vendored upstream source:
+- ratatui v0.30.0 src/widgets/barchart.rs (MIT and Apache-2.0 dual-licensed)
+
+Upstream repository:    https://github.com/ratatui/ratatui
+Upstream commit (tag):  ratatui-v0.30.0
+Upstream paths:          src/widgets/barchart.rs
+Upstream developers:    (C) The Ratatui Developers
+
+==============================================================================
+Modifications made for vendoring (recorded in the project git history via
+the .dejavue/timeline.jsonl log and the round-12 PR body):
+
+1. Diverged from the round-11 `List` vendoring pattern: round-12 ships as
+   `Widget` only (not `Widget` AND `StatefulWidget`) because upstream
+   ratatui's BarChart has no `StatefulWidget` counterpart. The §3
+   module doc in this crate explicitly notes that the round-11 E0034
+   carve-out pattern does NOT apply here (BarChart is round-6 Tabs
+   pattern stateless), so a future stateful-widget-vendoring round
+   does not inherit the contract for the wrong shape.
+
+2. The vendored `BarChart`'s `direction` field uses
+   `ratatui::layout::Direction` directly via `pub use ratatui::layout::Direction;`
+   — different from round-11's vendored `Direction` enum (which was a
+   custom `TopToBottom`/`BottomToTop`). The choice matches upstream
+   ratatui 1:1.
+
+3. The vendored `BarChart::render` paints per-bar `Style` patches via
+   per-cell `cell.set_style(...)` after the underlying `set_line` call
+   — defends against the ratatui 0.30 `set_line` per-Span-style
+   propagation inconsistency that round-11's vendored `List` had to
+   work around in v18.
+
+4. Six inline smoke tests + six integration tests (matches round-11's
+   count for parity). Two differentiator tests close specific hazard
+   categories: `bar_chart_direction_arms_yield_distinct_cell_anchors`
+   (closes Direction arm silent no-op) and
+   `bar_chart_max_scales_tallest_bar_to_full_height` (closes max-value
+   scaling confusion with column-width scaling).
+
+==============================================================================
+Downstream consumers:
+- crates/tornado in arniko workspace (gated behind `bar_chart` feature)
+- examples/multi-metric-footer in arniko workspace (Sparkline + BarChart
+  side-by-side as the canonical status-bar composition example)
+
+==============================================================================
+License: Dual-licensed under MIT OR Apache-2.0. See LICENSE-MIT and
+LICENSE-APACHE in this directory. Upstream portions are used under the
+same terms.

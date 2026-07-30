@@ -25,6 +25,8 @@
 //! | `popup` | [`Popup`], [`PopupState`] = `tui_popup` |
 //! | `big-text` | [`BigText`], [`PixelSize`] = `tui_big_text` |
 //! | `tree` | [`Tree`], [`TreeItem`], [`TreeState`], [`Flattened`] = `tui_tree_widget` |
+//! | `barchart` | [`BarChart`], [`Bar`], [`BarGroup`], [`BarSet`] = `tornado-barchart` |
+//! | `textinput` | [`TextArea`], [`TextAreaState`] = `tornado-textinput` |
 //! | `styles` | [`styled_span`], [`styled_line`], ANSI bridge types |
 
 #![allow(clippy::manual_is_multiple_of)]
@@ -88,6 +90,20 @@ pub use crate::big_text::{BigText, PixelSize};
 // The widget implements both `Widget` and `StatefulWidget`.
 #[cfg(feature = "tree")]
 pub use crate::tree::{Flattened, Tree, TreeItem, TreeState};
+// Round 12 — original BarChart/Bar/BarGroup/BarSet widget (no upstream
+// migration path — this isn't a thin wrapper over a `ratatui::widgets`
+// type). Consumers reach them as `tornado::widget::{BarChart, Bar,
+// BarGroup, BarSet}`.
+#[cfg(feature = "barchart")]
+pub use crate::barchart::{Bar, BarChart, BarGroup, BarSet};
+// Round 13 — vendored TextArea + TextAreaState from xai-ratatui-textarea
+// (Apache-2.0). Consumers reach them as
+// `tornado::widget::{TextArea, TextAreaState}`. The fully-qualified
+// `<&TextArea as ratatui::widgets::StatefulWidgetRef>::render_ref(...)`
+// form is the supported render path — `StatefulWidgetRef` is only
+// implemented for `&TextArea`, not `TextArea` by value.
+#[cfg(feature = "textinput")]
+pub use crate::textinput::{TextArea, TextAreaState};
 #[cfg(feature = "styles")]
 use crate::styles::Style as AnsiStyle;
 

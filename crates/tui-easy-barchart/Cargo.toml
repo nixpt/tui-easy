@@ -1,0 +1,20 @@
+[package]
+name        = "tornado-barchart"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+description = "Vendored ratatui::widgets::BarChart (round-12 canonical StatelessWidget precedent, paired with round-10 Sparkline as the canonical status-bar metric companion)"
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+keywords    = ["ratatui", "tui", "bar-chart", "vendored", "metrics"]
+categories  = ["command-line-utilities"]
+authors     = ["Vendored from ratatui under MIT/Apache-2.0; vendoring wrapper: arniko team"]
+publish     = false
+
+[dependencies]
+ratatui       = { workspace = true }
+unicode-width = { workspace = true }
+
+[lints.rust]
+unsafe_code = "forbid"

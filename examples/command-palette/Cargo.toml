@@ -1,0 +1,16 @@
+[package]
+name        = "command-palette"
+version     = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+description = "Round-13 example — command-palette composition: round-11 List (filtered) + round-13 TextArea (filter input) honoring the T13 two-carrier discipline (dejavue event_id 718bcc1aa525)"
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+publish     = false
+
+[dependencies]
+ratatui             = { workspace = true }
+# Pattern-matching on KeyCode / KeyModifiers — not re-exported by tornado.
+crossterm           = "0.28"
+tornado             = { workspace = true, features = ["textinput", "list", "styles"] }

@@ -68,6 +68,16 @@ tui-big-text = { workspace = true, optional = true }
 # Gated behind the `tree` feature. Replaces the vendored
 # `tornado-tree-widget`.
 tui-tree-widget = { workspace = true, optional = true }
+# Optional — original BarChart/Bar/BarGroup widget (round-12). No
+# upstream replacement pattern applies here (unlike tabs/sparkline/list,
+# this isn't a thin re-export of a `ratatui::widgets` type). Gated
+# behind the `barchart` feature.
+tornado-barchart = { workspace = true, optional = true }
+# Optional — vendored TextArea + TextAreaState from xai-ratatui-textarea
+# (Apache-2.0). ratatui ships no built-in text-area widget, so unlike
+# tabs/sparkline/list there's no upstream re-export path here either.
+# Gated behind the `textinput` feature.
+tornado-textinput = { workspace = true, optional = true }
 
 [features]
 default = []
@@ -89,6 +99,10 @@ popup = ["dep:tui-popup"]
 big-text = ["dep:tui-big-text"]
 # Tree widget from the tui-tree-widget crate (MIT).
 tree = ["dep:tui-tree-widget"]
+# Original BarChart/Bar/BarGroup widget (round-12).
+barchart = ["dep:tornado-barchart"]
+# Vendored TextArea + TextAreaState from xai-ratatui-textarea (round-13).
+textinput = ["dep:tornado-textinput"]
 # Log view: aggregates styles + scroller + wrap to expose
 # `tornado::tab_log::TabLog` — per-tab scroll log helper.
 log_view = [
@@ -121,6 +135,10 @@ required-features = ["spinner"]
 [[test]]
 name = "scrollview_integration"
 required-features = ["scroller"]
+
+# tornado-barchart / tornado-textinput integration tests live inside
+# those sibling crates' own `tests/` directories, exercised via
+# `cargo test -p tornado-barchart -p tornado-textinput`.
 
 # TabLog unit-tests live inside `crates/tornado/src/tab_log.rs`
 # (inline `#[cfg(test)] mod tests`). Exercised at module level.
