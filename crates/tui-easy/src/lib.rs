@@ -81,6 +81,22 @@ pub use tui_scrollview as scroller;
 // Migrated: `list` feature now uses `ratatui::widgets::{List, ListState}`
 // directly (was vendored via `crates/tornado-list`, now removed).
 // The re-export is via widget.rs. No module-level `pub use` is needed.
+
+// Original BarChart/Bar/BarGroup widget (round-12) — no upstream
+// equivalent to migrate to, unlike tabs/sparkline/list. Consumers reach
+// it as `tornado::widget::{BarChart, Bar, BarGroup, BarSet}` or via
+// this module alias as `tornado::barchart::*`.
+#[cfg(feature = "barchart")]
+pub use tornado_barchart as barchart;
+
+// Vendored TextArea + TextAreaState from xai-ratatui-textarea
+// (Apache-2.0, round-13) — ratatui ships no built-in text-area widget,
+// so unlike tabs/sparkline/list there's no upstream re-export path
+// here either. Consumers reach it as
+// `tornado::widget::{TextArea, TextAreaState}` or via this module
+// alias as `tornado::textinput::*`.
+#[cfg(feature = "textinput")]
+pub use tornado_textinput as textinput;
 // Migrated from vendored `tornado-popup` to upstream
 // `tui-popup` crate (v0.7, MIT). API is identical:
 // `Popup`, `PopupState` with mouse-drag support.

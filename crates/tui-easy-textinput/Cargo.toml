@@ -1,0 +1,55 @@
+[package]
+name        = "tornado-textinput"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+description = "Vendored TextArea + TextAreaState + EditBuffer from xai-ratatui-textarea (Apache-2.0)"
+license     = "Apache-2.0"
+homepage.workspace = true
+repository.workspace = true
+categories  = ["command-line-interface"]
+publish     = false
+
+# Vendoring surface — adopt the upstream xai-ratatui-textarea dep chain so
+# the vendored source compiles WITHOUT modification. Round-13 expressly
+# AVOIDS vendoring-side refactoring (and the upstream-internal-dep-drift
+# risk that comes with it). The dep chain mirrors tornado-wrap's strict
+# mirror pattern: every dep the upstream needed, we inherit through the
+# arniko workspace.dependencies table.
+#
+# Per the discovery step: 5 vendored files need:
+#   - ratatui + ratatui-core (widget rendering + buf/rect core types)
+#   - textwrap (line-wrap inside TextArea — wrapping.rs is vendored too,
+#     and the textwrap dep is required directly by textarea.rs's render path)
+#   - unicode-width + unicode-segmentation (grapheme + width calculation)
+#   - tui-scrollbar (used by textarea.rs's render() for the optional scroll
+#     indicator widget)
+#   - crossterm (event-stream + bracketed-paste keysym handling).
+#     NOTE: the example crate `examples/command-palette` does NOT use the
+#     upstream keymap handler (`classify_key_event` + `is_altgr`) — it
+#     reads keys through the TuiApp::handle_event envelope from the
+#     `tornado` umbrella instead. The crossterm dep is inherited for the
+#     VENDORED SOURCE to compile (textarea.rs + editor_keys.rs reference
+#     crossterm::event::* types) but is NOT exposed via the umbrella.
+[dependencies]
+ratatui             = { workspace = true, features = ["unstable-widget-ref"] }
+ratatui-core        = { workspace = true }
+textwrap            = { workspace = true }
+unicode-width       = { workspace = true }
+unicode-segmentation = { workspace = true }
+tui-scrollbar       = { workspace = true }
+crossterm           = { version = "0.28", default-features = false, features = ["event-stream"] }
+
+[dev-dependencies]
+ratatui = { workspace = true }
+arboard = "3.6"
+chrono = "0.4"
+fuzzy-matcher = "0.3.7"
+ignore = "0.4"
+itertools = "0.14"
+pretty_assertions = "1"
+rand = "0.9"
+
+[[test]]
+name = "textinput_integration"
+path = "tests/textinput_integration.rs"
