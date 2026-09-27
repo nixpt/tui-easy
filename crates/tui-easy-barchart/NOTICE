@@ -1,5 +1,5 @@
-tornado-barchart
-Copyright 2026 The Vendoring Wrapper (arniko project)
+tui-easy-barchart
+Copyright 2026 The tui-easy authors
 
 This product includes software developed at
 The Ratatui Developers (https://github.com/ratatui/ratatui).
@@ -46,9 +46,7 @@ the .dejavue/timeline.jsonl log and the round-12 PR body):
 
 ==============================================================================
 Downstream consumers:
-- crates/tornado in arniko workspace (gated behind `bar_chart` feature)
-- examples/multi-metric-footer in arniko workspace (Sparkline + BarChart
-  side-by-side as the canonical status-bar composition example)
+- crates/tui-easy (re-exported as `tui_easy::barchart` behind its `barchart` feature)
 
 ==============================================================================
 License: Dual-licensed under MIT OR Apache-2.0. See LICENSE-MIT and

@@ -7,7 +7,7 @@
 //!
 //! See also [`crate::TuiApp::handle_event()`] and [`crate::TuiApp::update()`].
 
-use crossterm::event::{self, Event, KeyEvent};
+use ratatui::crossterm::event::{self, Event, KeyEvent};
 use std::time::Duration;
 
 /// Events produced by the TUI event loop

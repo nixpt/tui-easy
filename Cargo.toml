@@ -32,7 +32,6 @@ ratatui        = "0.30"
 # `ratatui = "0.30"` — adding them here is zero-cost.
 ratatui-core    = "0.1"
 ratatui-widgets = "0.3"
-crossterm      = "0.28"
 tracing        = "0.1"
 # ANSI styling crate (used by tui-easy-styles to bridge into ratatui styles).
 anstyle        = "1"

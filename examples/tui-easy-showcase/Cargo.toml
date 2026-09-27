@@ -28,5 +28,4 @@ tui-easy = { workspace = true, features = [
     "big-text",
     "tree",
 ] }
-crossterm = "0.28"
 ratatui = { workspace = true }

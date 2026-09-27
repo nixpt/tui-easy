@@ -30,10 +30,17 @@ Plus four example apps under `examples/`: `scroll-log`, `command-palette`,
 
 ```toml
 [dependencies]
-tui-easy = { git = "https://github.com/nixpt/tui-easy", features = [
+tui-easy = { version = "0.3", features = [
     "spinner", "scroller", "big-text", "popup", "tree",
 ] }
 ```
+
+**crossterm:** don't add your own `crossterm` dependency. tui-easy takes its
+event and key types from ratatui's re-export and passes it on as
+`tui_easy::crossterm`, so they always match ratatui's backend. Import from there
+(`use tui_easy::crossterm::event::{KeyCode, KeyEvent};`). A direct crossterm
+dependency on a different version compiles into distinct types that won't
+match `TuiEvent::Key`.
 
 ```bash
 cargo build --workspace

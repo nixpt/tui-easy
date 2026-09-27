@@ -43,7 +43,6 @@ tui-easy = { workspace = true, features = [
     "sparkline",
 ] }
 # Pattern-matching on KeyCode / KeyModifiers — not re-exported by tui-easy.
-crossterm = "0.28"
 # ratatui is a transitive dep of tui-easy, but declared explicitly here
 # so `cargo tree -p multi-tab-log` shows the upstream type surface
 # (`Tabs`, `Layout`, `Paragraph`, `Frame`, `Buffer`, etc.) under the

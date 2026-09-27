@@ -252,7 +252,7 @@ impl TuiApp for CommandPaletteApp {
     fn handle_event(&mut self, event: TuiEvent) {
         // T13 discipline: typing → FILTER slot; arrows → SELECTION slot.
         let TuiEvent::Key(key) = event else { return };
-        use crossterm::event::{KeyCode, KeyModifiers};
+        use ratatui::crossterm::event::{KeyCode, KeyModifiers};
         match key.code {
             KeyCode::Char('c') if key.modifiers.contains(KeyModifiers::CONTROL) => {
                 self.last_dispatch = None;

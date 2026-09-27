@@ -8,7 +8,8 @@ license     = "Apache-2.0"
 homepage.workspace = true
 repository.workspace = true
 categories  = ["command-line-interface"]
-publish     = false
+readme      = "README.md"
+keywords    = ["tui", "ratatui", "textarea", "editor", "terminal"]
 
 # Vendoring surface — adopt the upstream xai-ratatui-textarea dep chain so
 # the vendored source compiles WITHOUT modification. Round-13 expressly
@@ -24,13 +25,14 @@ publish     = false
 #   - unicode-width + unicode-segmentation (grapheme + width calculation)
 #   - tui-scrollbar (used by textarea.rs's render() for the optional scroll
 #     indicator widget)
-#   - crossterm (event-stream + bracketed-paste keysym handling).
+#   - crossterm event types (keys, modifiers, mouse) — taken from ratatui's
+#     own re-export (`ratatui::crossterm`), NOT a direct crossterm dep, so
+#     the key/event types always match the crossterm version ratatui's
+#     backend uses (a direct dep had split the tree into 0.28 + 0.29).
 #     NOTE: the example crate `examples/command-palette` does NOT use the
 #     upstream keymap handler (`classify_key_event` + `is_altgr`) — it
 #     reads keys through the TuiApp::handle_event envelope from the
-#     `tui-easy` umbrella instead. The crossterm dep is inherited for the
-#     VENDORED SOURCE to compile (textarea.rs + editor_keys.rs reference
-#     crossterm::event::* types) but is NOT exposed via the umbrella.
+#     `tui-easy` umbrella instead.
 [dependencies]
 ratatui             = { workspace = true, features = ["unstable-widget-ref"] }
 ratatui-core        = { workspace = true }
@@ -38,7 +40,11 @@ textwrap            = { workspace = true }
 unicode-width       = { workspace = true }
 unicode-segmentation = { workspace = true }
 tui-scrollbar       = { workspace = true }
-crossterm           = { version = "0.28", default-features = false, features = ["event-stream"] }
+tracing             = { workspace = true, optional = true }
+
+[features]
+# Log unhandled key events via `tracing` (the vendored source's own opt-in).
+debug-logs = ["dep:tracing"]
 
 [dev-dependencies]
 ratatui = { workspace = true }

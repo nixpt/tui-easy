@@ -28,7 +28,6 @@ tui-easy = { workspace = true, features = [
     "wrap",
 ] }
 # Pattern-matching on KeyCode / KeyModifiers — not re-exported by tui-easy.
-crossterm = "0.28"
 # ratatui's TestBackend is in the default feature set, but the example
 # declares the dep explicitly so it shows up in `cargo tree` for the
 # downstream consumer.

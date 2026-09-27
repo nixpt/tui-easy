@@ -8,6 +8,8 @@ edition.workspace = true
 rust-version.workspace = true
 description = "anstyle → ratatui style conversion and shared HyperlinkTarget type, borrowed from xai-grok-markdown"
 categories = ["command-line-interface"]
+readme = "README.md"
+keywords = ["tui", "ratatui", "ansi", "style", "hyperlink"]
 
 [dependencies]
 anstyle = { workspace = true }

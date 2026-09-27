@@ -1,4 +1,4 @@
-tornado-styles
+tui-easy-styles
 
 Portions of this crate are derived from first-party code in the
 xai-grok-markdown crate, part of xAI's Grok build (grok-build) project.

@@ -1,4 +1,4 @@
-tornado-wrap
+tui-easy-wrap
 
 Portions of this crate are derived from first-party code in the
 xai-ratatui-textarea crate, part of xAI's Grok build (grok-build) project.

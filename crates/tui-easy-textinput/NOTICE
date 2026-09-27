@@ -1,4 +1,4 @@
-tornado-textinput
+tui-easy-textinput
 
 Portions of this crate are derived from first-party code in the
 xai-ratatui-textarea crate, part of xAI's Grok build (grok-build) project.
@@ -16,32 +16,28 @@ Original source:
   License:    Apache License, Version 2.0
 
 Excluded from the vendoring scope (NOT vendored):
-  - wrapping.rs    — already vendored into the sibling `tornado-wrap`
+  - wrapping.rs    — already vendored into the sibling `tui-easy-wrap`
                      crate (round-2 borrow-and-port). Re-vendoring here
                      would create a workspace circular dependency on
-                     `textwrap` via `tornado-wrap`'s path-only dep on
+                     `textwrap` via `tui-easy-wrap`'s path-only dep on
                      the same leaf.
   - editor_tests/  — upstream internal test directory; per the rounds
                      6/10/11/12 vendoring pattern, vendored siblings do
                      NOT carry upstream test files. Round-13 tests live
-                     in `crates/tornado-textinput/src/lib.rs` (inline)
-                     and `crates/tornado-textinput/tests/textinput_integration.rs`
+                     in `crates/tui-easy-textinput/src/lib.rs` (inline)
+                     and `crates/tui-easy-textinput/tests/textinput_integration.rs`
                      (integration), and target the public re-export
                      surface exclusively.
 
 The vendoring adopts the SAME upstream source as the sibling
-`tornado-wrap` crate (round-2): the xai-ratatui-textarea crate is the
+`tui-easy-wrap` crate (round-2): the xai-ratatui-textarea crate is the
 canonical source for both wrap-algorithms (round-2) and the
-input-widget surface (round-13). Cross-reference `crates/tornado-wrap/NOTICE`
+input-widget surface (round-13). Cross-reference `crates/tui-easy-wrap/NOTICE`
 for the upstream Apache-2.0 attribution precedent (verbatim shape).
 
-The vendored surface is mechanically consumed through arniko's
-replacement `crates/tornado-textinput/src/lib.rs`, which is intentionally
-THIN — it re-exports the upstream public types (`TextArea`, `TextAreaState`,
-`EditBuffer`, `EditCommand`, …) with the round-13 amended §1–§6 module
-doc-comment adding the E0034 carve-out §3 module doc that cites
-`crates/tornado-list/src/lib.rs` as the canonical StatefulWidget
-precedent anchor.
+The vendored surface is consumed through this crate's thin
+`src/lib.rs`, which re-exports the upstream public types (`TextArea`,
+`TextAreaState`, `EditBuffer`, `EditCommand`, ...).
 
 See LICENSE-APACHE in this crate for the full license text. The
 xai-ratatui-textarea crate does not redistribute any third-party source itself;
