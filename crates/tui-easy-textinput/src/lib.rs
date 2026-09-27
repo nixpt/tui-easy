@@ -1,9 +1,9 @@
-//! # `tornado-textinput`
+//! # `tui-easy-textinput`
 //!
 //! Vendored `TextArea` (with `TextAreaState` carrier) + `EditBuffer` +
 //! `EditCommand` + `EditElement` + `WordStyle` + render helpers from
 //! [`xai-ratatui-textarea`](https://github.com/xai-org/grok-build) (the same
-//! upstream source the sibling `tornado-wrap` crate borrowed in round-2).
+//! upstream source the sibling `tui-easy-wrap` crate borrowed in round-2).
 //! This crate is the **canonical StatefulWidget-vendoring precedent EXTENSION**
 //! for every future stateful-widget round in the awesome-ratatui adoption
 //! series that re-inherits round-11's E0034 carve-out pattern.
@@ -13,7 +13,7 @@
 //! See `LICENSE-APACHE` + `NOTICE` for upstream attribution. Vendoring
 //! scope (5 files, ~10,944 LoC): `textarea.rs`, `editor.rs`,
 //! `editor_keys.rs`, `render/mod.rs`, `render/line_utils.rs`. Files NOT
-//! vendored: `wrapping.rs` (already in `tornado-wrap`); `editor_tests/`
+//! vendored: `wrapping.rs` (already in `tui-easy-wrap`); `editor_tests/`
 //! (test-only, vendored libs do NOT carry upstream test files per rounds
 //! 6/10/11/12 pattern).
 //!
@@ -42,7 +42,7 @@
 //!
 //! ## (3) E0034 carve-out module doc — round-13 re-inheritance of round-11
 //!
-//! Round-11's [`tornado-list`](../tornado-list/index.html) crate
+//! Round-11's [`tui_easy-list`](../tui_easy-list/index.html) crate
 //! established the canonical StatefulWidget-vendoring pattern: vendoring
 //! **BOTH** `Widget` + `StatefulWidget` impls together on the same widget
 //! type produces an E0034 ambiguity at consumer call sites when both
@@ -51,7 +51,7 @@
 //! call site, rather than bare `text_area.render(...)`.
 //!
 //! **Round-13 re-inheritance declaration (dejavue event_id
-//! `65c08f359efd`)**: round-12's [`tornado-barchart`](../tornado-barchart/index.html)
+//! `65c08f359efd`)**: round-12's [`tui-easy-barchart`](../tui-easy-barchart/index.html)
 //! crate captured (event_id `dfaed35e5ccb`) that round-12 deliberately
 //! DIVERGED from round-11 because `BarChart` is stateless (no
 //! `StatefulWidget` counterpart upstream). Round-13 reverses that
@@ -78,7 +78,7 @@
 //! Mistaking them for nested carriers (e.g., treating
 //! `ListState.selected` as driving `TextArea.value` or vice versa)
 //! produces silent staleness on dispatch. The canonical reference
-//! example is `examples/command-palette/src/main.rs` in the arniko
+//! example is `examples/command-palette/src/main.rs` in the tui-easy
 //! umbrella — refer to its `handle_event` + `project_filter` pair for
 //! the discipline pattern (T13 + `718bcc1aa525`).
 //!
@@ -100,15 +100,15 @@
 //!   duration injection; no wall-clock in tests.
 //! - **Crossterm dep inheritance** — the vendored source references
 //!   `crossterm::event::KeyEvent` etc. We inherit `crossterm` as a
-//!   vendoring-dep (NOT re-exported via the `tornado` umbrella).
-//!   Cross-references: this is the same precedent as `tornado-wrap`
+//!   vendoring-dep (NOT re-exported via the `tui_easy` umbrella).
+//!   Cross-references: this is the same precedent as `tui-easy-wrap`
 //!   inheriting `textwrap` (round-2 dep inheritance).
 //!
 //! ## (6) Upstream reference
 //!
 //! <https://github.com/xai-org/grok-build/tree/main/crates/codegen/xai-ratatui-textarea/src>
 //!
-//! Same upstream source as the sibling `tornado-wrap` crate (round-2
+//! Same upstream source as the sibling `tui-easy-wrap` crate (round-2
 //! borrow-and-port). The cross-references in §3 + §4 cite the round-11
 //! + round-12 vendoring precedents that anchor round-13's
 //! pattern-application decisions.
@@ -134,9 +134,9 @@
 //
 // Using `pub use ratatui::widgets::{Block, StatefulWidget, Widget};` is
 // INTENTIONALLY OMITTED — we do not surface ratatui's `Block` at the
-// `tornado_textinput` crate root because the vendored source's Block
+// `tui_easy_textinput` crate root because the vendored source's Block
 // usage is internal. Consumers get Block via the umbrella crate via
-// `tornado::widget::Block` (round-1 styles precedent).
+// `tui_easy::widget::Block` (round-1 styles precedent).
 //
 // Widget + StatefulWidget ARE surfaced at the crate root — they are
 // required for the E0034 carve-out Pattern A call site
@@ -163,7 +163,7 @@ pub use ratatui::widgets::{WidgetRef, StatefulWidgetRef};
 use crossterm::event::KeyModifiers;
 
 // `is_altgr` from upstream — Windows-specific. Vendored verbatim, NOT
-// re-exported (vendored source is internal-to-tornado-textinput).
+// re-exported (vendored source is internal-to-tui-easy-textinput).
 #[cfg(target_os = "windows")]
 #[inline]
 pub fn is_altgr(modifiers: KeyModifiers) -> bool {

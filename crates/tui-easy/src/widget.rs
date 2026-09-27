@@ -1,9 +1,9 @@
 //! Widget re-export hub.
 //!
-//! All widget types exposed by the tornado umbrella are re-exported here,
+//! All widget types exposed by the tui_easy umbrella are re-exported here,
 //! gated behind their corresponding feature flags. Consumers are encouraged
-//! to import from `tornado::widget::*` rather than from the per-crate modules
-//! (`tornado::spinner`, `tornado::popup`, etc.) to keep import paths stable
+//! to import from `tui_easy::widget::*` rather than from the per-crate modules
+//! (`tui_easy::spinner`, `tui_easy::popup`, etc.) to keep import paths stable
 //! across upstream crate changes.
 //!
 //! ## Always-available helpers
@@ -25,8 +25,8 @@
 //! | `popup` | [`Popup`], [`PopupState`] = `tui_popup` |
 //! | `big-text` | [`BigText`], [`PixelSize`] = `tui_big_text` |
 //! | `tree` | [`Tree`], [`TreeItem`], [`TreeState`], [`Flattened`] = `tui_tree_widget` |
-//! | `barchart` | [`BarChart`], [`Bar`], [`BarGroup`], [`BarSet`] = `tornado-barchart` |
-//! | `textinput` | [`TextArea`], [`TextAreaState`] = `tornado-textinput` |
+//! | `barchart` | [`BarChart`], [`Bar`], [`BarGroup`], [`BarSet`] = `tui-easy-barchart` |
+//! | `textinput` | [`TextArea`], [`TextAreaState`] = `tui-easy-textinput` |
 //! | `styles` | [`styled_span`], [`styled_line`], ANSI bridge types |
 
 #![allow(clippy::manual_is_multiple_of)]
@@ -43,17 +43,17 @@ pub use crate::spinner::Spinner;
 #[cfg(feature = "scroller")]
 pub use crate::scroller::ScrollView;
 // Round 6 catch-up (migrated): `TabNav` is now re-exported from
-// `ratatui::widgets::Tabs` directly. The vendored `crates/tornado-tabs`
+// `ratatui::widgets::Tabs` directly. The vendored `crates/tui_easy-tabs`
 // has been removed. The `tabs` feature is kept as an empty feature
 // gate for backward compatibility — enabling it makes `TabNav`
-// available at `tornado::widget::TabNav`. The upstream
+// available at `tui_easy::widget::TabNav`. The upstream
 // StatefulWidget impl is not exposed; consumers use the standard
 // `Widget` impl (consuming) which matches the round-6 contract.
 #[cfg(feature = "tabs")]
 pub use ratatui::widgets::Tabs as TabNav;
 // Migrated: `Sparkline` is now re-exported from
 // `ratatui::widgets::Sparkline` directly. The vendored
-// `crates/tornado-sparkline` has been removed. Note: the native
+// `crates/tui_easy-sparkline` has been removed. Note: the native
 // API differs from the vendored version — `Sparkline::new(&[u64])`
 // became `Sparkline::default().data(&[u64])`, and `bar_set()`
 // now accepts `ratatui::symbols::bar::Set` instead of
@@ -63,7 +63,7 @@ pub use ratatui::widgets::Tabs as TabNav;
 #[cfg(feature = "sparkline")]
 pub use ratatui::widgets::Sparkline;
 // Migrated: `List` and `ListState` are now re-exported from
-// `ratatui::widgets` directly. The vendored `crates/tornado-list`
+// `ratatui::widgets` directly. The vendored `crates/tui_easy-list`
 // has been removed. The native `List` accepts the same inputs
 // (`Vec<Text>` via `Into<ListItem>`) and has the same builder
 // API. The fully-qualified form `<List as StatefulWidget>::render`
@@ -72,33 +72,33 @@ pub use ratatui::widgets::Sparkline;
 #[cfg(feature = "list")]
 pub use ratatui::widgets::{List, ListState};
 // Round 12 — vendored Popup + PopupState from joshka/tui-popup (MIT).
-// Consumers reach them as `tornado::widget::{Popup, PopupState}`.
+// Consumers reach them as `tui_easy::widget::{Popup, PopupState}`.
 // The popup implements both `Widget for &Popup` and
 // `StatefulWidget for &Popup` for stateless and stateful rendering.
 // Stateful rendering enables mouse-drag repositioning via
 // `PopupState::mouse_down/mouse_up/mouse_drag`.
 #[cfg(feature = "popup")]
 pub use crate::popup::{Popup, PopupState};
-// Migrated from vendored `tornado-big-text` to upstream
+// Migrated from vendored `tui_easy-big-text` to upstream
 // `tui-big-text` crate (v0.8, MIT/Apache-2.0). Consumers reach
-// them as `tornado::widget::{BigText, PixelSize}`.
+// them as `tui_easy::widget::{BigText, PixelSize}`.
 #[cfg(feature = "big-text")]
 pub use crate::big_text::{BigText, PixelSize};
 // Round 14 — vendored Tree + TreeItem + TreeState + Flattened from
 // EdJoPaTo/tui-rs-tree-widget (MIT). Consumers reach them as
-// `tornado::widget::{Tree, TreeItem, TreeState, Flattened}`.
+// `tui_easy::widget::{Tree, TreeItem, TreeState, Flattened}`.
 // The widget implements both `Widget` and `StatefulWidget`.
 #[cfg(feature = "tree")]
 pub use crate::tree::{Flattened, Tree, TreeItem, TreeState};
 // Round 12 — original BarChart/Bar/BarGroup/BarSet widget (no upstream
 // migration path — this isn't a thin wrapper over a `ratatui::widgets`
-// type). Consumers reach them as `tornado::widget::{BarChart, Bar,
+// type). Consumers reach them as `tui_easy::widget::{BarChart, Bar,
 // BarGroup, BarSet}`.
 #[cfg(feature = "barchart")]
 pub use crate::barchart::{Bar, BarChart, BarGroup, BarSet};
 // Round 13 — vendored TextArea + TextAreaState from xai-ratatui-textarea
 // (Apache-2.0). Consumers reach them as
-// `tornado::widget::{TextArea, TextAreaState}`. The fully-qualified
+// `tui_easy::widget::{TextArea, TextAreaState}`. The fully-qualified
 // `<&TextArea as ratatui::widgets::StatefulWidgetRef>::render_ref(...)`
 // form is the supported render path — `StatefulWidgetRef` is only
 // implemented for `&TextArea`, not `TextArea` by value.
@@ -171,8 +171,8 @@ pub fn status_bar<'a>(
 
 // ─── ANSI ↔ ratatui bridge helpers (feature: `styles`) ────────────────────
 //
-// These helpers demonstrate the `tornado-styles` bridge in use inside
-// `tornado::widget`. They produce ready-to-render ratatui primitives from a
+// These helpers demonstrate the `tui-easy-styles` bridge in use inside
+// `tui_easy::widget`. They produce ready-to-render ratatui primitives from a
 // plain `&str` plus an `anstyle::Style`, which is the typical shape of text
 // that has been styled by an upstream library (markdown, man pages, pipes,
 // etc.) before it reaches the TUI shell.

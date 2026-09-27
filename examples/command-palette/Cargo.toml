@@ -11,6 +11,6 @@ publish     = false
 
 [dependencies]
 ratatui             = { workspace = true }
-# Pattern-matching on KeyCode / KeyModifiers — not re-exported by tornado.
+# Pattern-matching on KeyCode / KeyModifiers — not re-exported by tui-easy.
 crossterm           = "0.28"
-tornado             = { workspace = true, features = ["textinput", "list", "styles"] }
+tui-easy             = { workspace = true, features = ["textinput", "list", "styles"] }

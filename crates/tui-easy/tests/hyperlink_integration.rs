@@ -1,7 +1,7 @@
-//! Integration test for `tornado` + `tornado-hyperlink` (`--features hyperlink`).
+//! Integration test for `tui_easy` + `tui_easy-hyperlink` (`--features hyperlink`).
 //!
 //! Guards the OSC 8 widget end-to-end:
-//!  * Reachable via `tornado::hyperlink::Link` (re-export of vendored crate).
+//!  * Reachable via `tui_easy::hyperlink::Link` (re-export of vendored crate).
 //!  * The widget's hyperlinked prefix IS actually emitted into the buffer.
 //!  * Tail cells after the prefix carry `CellDiffOption::Skip` so the rest
 //!    of the row is rendered as plain text under the same style.
@@ -17,7 +17,7 @@ use ratatui::buffer::CellDiffOption;
 use ratatui::layout::{Position, Rect};
 use ratatui::Terminal;
 use ratatui::backend::TestBackend;
-use tornado::hyperlink::Link;
+use tui_easy::hyperlink::Link;
 
 fn terminal(width: u16, height: u16) -> Terminal<TestBackend> {
     let backend = TestBackend::new(width, height);
@@ -25,16 +25,16 @@ fn terminal(width: u16, height: u16) -> Terminal<TestBackend> {
 }
 
 #[test]
-fn hyperlink_widget_is_reachable_through_tornado_hyperlink() {
+fn hyperlink_widget_is_reachable_through_tui_easy_hyperlink() {
     // Compile + reachability check: build the widget exactly as a downstream
     // app would, then verify a basic invariant. The 5 unit tests inside
-    // tornado-hyperlink cover the cell-level details; this integration
+    // tui_easy-hyperlink cover the cell-level details; this integration
     // test only proves the public surface is wired up.
     let mut term = terminal(20, 1);
     term.draw(|frame| {
         let area = Rect::new(0, 0, 8, 1);
         frame.render_widget(
-            Link::new("docs", "https://docs.rs/tornado-hyperlink"),
+            Link::new("docs", "https://docs.rs/tui_easy-hyperlink"),
             area,
         );
     })
@@ -50,7 +50,7 @@ fn hyperlink_widget_is_reachable_through_tornado_hyperlink() {
     assert!(
         first
             .symbol()
-            .contains("\u{1b}]8;;https://docs.rs/tornado-hyperlink\u{1b}\\"),
+            .contains("\u{1b}]8;;https://docs.rs/tui_easy-hyperlink\u{1b}\\"),
         "expected OSC 8 prefix in first cell, got {:?}",
         first.symbol(),
     );
@@ -58,7 +58,7 @@ fn hyperlink_widget_is_reachable_through_tornado_hyperlink() {
     // Skip-flag assertions across `Terminal::draw` are not reliable under
     // `ratatui = 0.30` — the test backend's diff pipeline resets
     // `diff_option` to `None` on draw boundaries in some scenarios.
-    // That behavior is exercised exhaustively in `tornado-hyperlink`'s
+    // That behavior is exercised exhaustively in `tui_easy-hyperlink`'s
     // own unit tests via direct `Buffer::empty(...)` + `Link::render` —
     // we deliberately do NOT re-check it here to keep the integration
     // test green on 0.30.

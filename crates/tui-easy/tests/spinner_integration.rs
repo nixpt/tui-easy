@@ -1,8 +1,8 @@
-//! Integration test for `tornado` + `tornado-spinner` (`--features spinner`).
+//! Integration test for `tui_easy` + `tui_easy-spinner` (`--features spinner`).
 //!
 //! Guards the spinner end-to-end:
 //!  * `Spinner`, `SpinnerState`, and `SpinnerType` are reachable via the
-//!    `tornado::spinner` re-export.
+//!    `tui_easy::spinner` re-export.
 //!  * The default state -> `SpinnerType::Line` and the default frame -> `"│"`.
 //!  * `tick(Duration)` advances frame indices at the documented intervals,
 //!    accumulates remainder, and wraps when out of bounds — exactly the
@@ -19,10 +19,10 @@ use std::time::Duration;
 
 use ratatui::buffer::Buffer;
 use ratatui::layout::{Position, Rect};
-use tornado::spinner::{Spinner, SpinnerState, SpinnerType};
+use tui_easy::spinner::{Spinner, SpinnerState, SpinnerType};
 
 #[test]
-fn spinner_widget_is_reachable_through_tornado_spinner() {
+fn spinner_widget_is_reachable_through_tui_easy_spinner() {
     // Reachability check at the public surface: build the widget +
     // state exactly as a downstream app would.
     let spinner = Spinner::default();
@@ -33,7 +33,7 @@ fn spinner_widget_is_reachable_through_tornado_spinner() {
     assert_eq!(state.frame_str(), "\u{28fe}");
 
     // TypeScript compile-only check: if the re-export paths diverge from
-    // the vendored tornado_spinner upstream, this assignment fails to
+    // the vendored tui_easy_spinner upstream, this assignment fails to
     // compile and the integration test fails immediately.
     let _ = Spinner::default().style(ratatui::style::Style::default());
 }

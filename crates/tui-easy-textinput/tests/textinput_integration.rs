@@ -1,4 +1,4 @@
-//! Integration tests for `tornado-textinput`.
+//! Integration tests for `tui-easy-textinput`.
 //!
 //! - 6 integration tests
 //! - Round-13 canonical differentiator: `e0034_fully_qualified_resolve`
@@ -18,7 +18,7 @@ use ratatui::layout::Rect;
 use ratatui::style::Color;
 use ratatui::style::Style;
 use ratatui::Terminal;
-use tornado_textinput::{StatefulWidgetRef, TextArea, TextAreaState};
+use tui_easy_textinput::{StatefulWidgetRef, TextArea, TextAreaState};
 
 // `apply_styled_render` — helper that ALWAYS uses Pattern A (fully-qualified
 // StatefulWidget disambiguation). Mirrors the round-11 list_integration.rs
@@ -182,9 +182,9 @@ fn integration_05_vendoring_compiles_with_upstream_dep_chain() {
     // upstream ref is broken (e.g., a type changed in upstream without
     // a vendoring-side patch catching it), the test fails at compile-time.
     // Tradeoff: heavier dep surface (7 deps vs round-11's 1-dep surface),
-    // but matches the round-2 tornado-wrap strict-dep-mirror precedent
+    // but matches the round-2 tui-easy-wrap strict-dep-mirror precedent
     // (vendored siblings reflect upstream's needs precisely).
-    use tornado_textinput::{
+    use tui_easy_textinput::{
         classify_key_event, EditBuffer, EditCommand, EditPlan, ElementId, ElementKind,
         InternalClipboard, MouseAction, TextElementEvent, WordStyle, is_altgr,
         is_undo_input,
@@ -199,12 +199,12 @@ fn integration_05_vendoring_compiles_with_upstream_dep_chain() {
     let _edit_buffer = EditBuffer::default();
     let _edit_command = EditCommand::Insert('x');
     let _edit_plan: Result<EditPlan, _> = Err(
-        tornado_textinput::ApplyEditPlanError::StalePlan,
+        tui_easy_textinput::ApplyEditPlanError::StalePlan,
     );
     let _word_style = WordStyle::Small;
     let _event = TextElementEvent {
         id: _id,
-        kind: tornado_textinput::TextElementEventKind::Click,
+        kind: tui_easy_textinput::TextElementEventKind::Click,
     };
     // `classify_key_event` takes a crossterm KeyEvent; construct one inline.
     let _keyevent = crossterm::event::KeyEvent::new(
@@ -229,7 +229,7 @@ fn e0034_fully_qualified_resolve() {
     // (positive assertion shape — round-11 v7 carry, no
     // assert_ne! buffer-length-inverted tricks).
     //
-    // IMPORTANT: the imports above (`use tornado_textinput::{StatefulWidgetRef,
+    // IMPORTANT: the imports above (`use tui_easy_textinput::{StatefulWidgetRef,
     // TextArea, TextAreaState};`) bring BOTH traits into scope — that's
     // what makes E0034 carve-out a real artifact of this test. The
     // fully-qualified form `<TextArea as StatefulWidgetRef>::render_ref(...)` is

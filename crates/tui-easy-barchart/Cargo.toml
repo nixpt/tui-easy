@@ -1,5 +1,5 @@
 [package]
-name        = "tornado-barchart"
+name        = "tui-easy-barchart"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -9,7 +9,7 @@ homepage.workspace = true
 repository.workspace = true
 keywords    = ["ratatui", "tui", "bar-chart", "vendored", "metrics"]
 categories  = ["command-line-utilities"]
-authors     = ["Vendored from ratatui under MIT/Apache-2.0; vendoring wrapper: arniko team"]
+authors     = ["Vendored from ratatui under MIT/Apache-2.0; vendoring wrapper: tui-easy team"]
 publish     = false
 
 [dependencies]

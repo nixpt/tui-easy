@@ -1,8 +1,8 @@
 //! # `command-palette`
 //!
 //! Round-13 example — the canonical command-palette composition
-//! exercising the `tornado-textinput` vendored sibling alongside
-//! `tornado-list` (round-11) + `tornado-styles` (round-1). Honors the
+//! exercising the `tui-easy-textinput` vendored sibling alongside
+//! `tui_easy-list` (round-11) + `tui-easy-styles` (round-1). Honors the
 //! T13 two-carrier discipline (dejavue event_id `718bcc1aa525`).
 //!
 //! ## T13 discipline contract (enforced in `handle_event` + `project_filter`)
@@ -43,9 +43,9 @@ use ratatui::layout::{Constraint, Direction, Layout, Rect};
 use ratatui::Terminal;
 use ratatui::widgets::Widget;
 use ratatui::widgets::{StatefulWidget, StatefulWidgetRef};
-use tornado::event::TuiEvent;
-use tornado::widget::{status_bar, List, ListState, TextArea, TextAreaState};
-use tornado::TuiApp;
+use tui_easy::event::TuiEvent;
+use tui_easy::widget::{status_bar, List, ListState, TextArea, TextAreaState};
+use tui_easy::TuiApp;
 
 // ─── Candidate set (the unfiltered list) ─────────────────────────────────────
 
@@ -237,7 +237,7 @@ pub fn render(app: &mut CommandPaletteApp, frame_area: Rect, buf: &mut Buffer) {
     // ── Status — keymap hint ───────────────────────────────────
     let hint = "↑↓ select · Enter dispatch · Ctrl-C quit";
     let hint_line = hint;
-    let theme = tornado::theme::ThemeColors::default().to_ratatui();
+    let theme = tui_easy::theme::ThemeColors::default().to_ratatui();
     let status_p = status_bar(hint_line, None::<&str>, &theme);
     status_p.render(ls.status, buf);
 }
@@ -296,7 +296,7 @@ const TICK_RATE: std::time::Duration = std::time::Duration::from_millis(80);
 
 fn main() -> std::io::Result<()> {
     let app = CommandPaletteApp::new();
-    tornado::run_app(app, TICK_RATE)
+    tui_easy::run_app(app, TICK_RATE)
 }
 
 // ─── 7 smoke tests ──────────────────────────────────────────────────────────

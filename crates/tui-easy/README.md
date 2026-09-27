@@ -1,28 +1,28 @@
-# 🌪️ Tornado
+# 🌪️ Tui Easy
 
-**Shared terminal UI shell** for the [Arniko](https://github.com/nixpt/arniko) workspace — terminal init, crossterm event loop, themes, and a curated palette of ratatui widgets behind a unified feature surface.
+**Shared terminal UI shell** — terminal init, crossterm event loop, themes, and a curated palette of ratatui widgets behind a unified feature surface. Extracted from [nixpt/tui-easy](https://github.com/nixpt/tui-easy).
 
-Tornado unifies all TUI-related code across Arniko and its consumers (including [spores](https://github.com/openko-network/spores)) so every project gets the same event loop, theme system, and widget access without wiring each dependency individually.
+Tui Easy unifies TUI-related code across its consumers (including [spores](https://github.com/openko-network/spores)) so every project gets the same event loop, theme system, and widget access without wiring each dependency individually.
 
 ---
 
 ## Quick start
 
-Add tornado to your `Cargo.toml` with the features you need:
+Add tui-easy to your `Cargo.toml` with the features you need:
 
 ```toml
 [dependencies]
-tornado = { path = "../arniko/crates/tornado", features = [
+tui-easy = { git = "https://github.com/nixpt/tui-easy", features = [
     "spinner", "scroller", "big-text", "popup", "tree",
 ], optional = true }
 ```
 
 The minimal app looks like this:
 
-```rust
+```rust,ignore
 use std::time::Duration;
-use tornado::event::TuiEvent;
-use tornado::{run_app, TuiApp};
+use tui_easy::event::TuiEvent;
+use tui_easy::{run_app, TuiApp};
 
 struct MyApp { quit: bool }
 
@@ -49,27 +49,27 @@ fn main() -> std::io::Result<()> {
 
 ## Feature flags
 
-Tornado's features are entirely additive and **opt-in**: enable only what you need, and no unused dependencies are compiled.
+Tui Easy's features are entirely additive and **opt-in**: enable only what you need, and no unused dependencies are compiled.
 
 | Feature | Provides | Upstream crate | Path |
 |---|---|---|---|
-| `tabs` | Tab navigation widget (empty gate for compat) | `ratatui::widgets::Tabs` | `tornado::widget::TabNav` |
-| `sparkline` | Bar-chart sparkline widget (empty gate) | `ratatui::widgets::Sparkline` | `tornado::widget::Sparkline` |
-| `list` | Scrollable list widget (empty gate) | `ratatui::widgets::{List, ListState}` | `tornado::widget::{List, ListState}` |
-| `spinner` | Animated spinner glyph | [`ratatui-cheese`](https://crates.io/crates/ratatui-cheese) · v0.7 | `tornado::widget::Spinner` · `tornado::spinner::{SpinnerState, SpinnerType}` |
-| `hyperlink` | OSC 8 hyperlink widget | [`hyperrat`](https://crates.io/crates/hyperrat) · v0.1 | `tornado::widget::Link` · `tornado::hyperlink` |
-| `scroller` | Stateful scrollable viewport | [`tui-scrollview`](https://crates.io/crates/tui-scrollview) · v0.6 | `tornado::widget::ScrollView` · `tornado::scroller::{ScrollView, ScrollViewState, ScrollbarVisibility}` |
-| `popup` | Popup overlay with drag support | [`tui-popup`](https://crates.io/crates/tui-popup) · v0.7 | `tornado::widget::{Popup, PopupState}` |
-| `big-text` | Large pixel text (font8x8) | [`tui-big-text`](https://crates.io/crates/tui-big-text) · v0.8 | `tornado::widget::{BigText, PixelSize}` |
-| `tree` | Stateful file tree with fold/expand | [`tui-tree-widget`](https://crates.io/crates/tui-tree-widget) · v0.24 | `tornado::widget::{Tree, TreeItem, TreeState, Flattened}` |
-| `styles` | `anstyle` → ratatui bridge | `tornado-styles` (in-house) | `tornado::widget::{styled_span, styled_line}` · `tornado::styles` |
-| `wrap` | Word-wrap helpers for `Line`/`Span` | `tornado-wrap` (in-house) | `tornado::wrap::{word_wrap_line, word_wrap_lines_borrowed}` |
-| `log_view` | Per-tab scroll-log helper (aggregates `styles` + `scroller` + `wrap`) | Combo | `tornado::tab_log::TabLog` |
+| `tabs` | Tab navigation widget (empty gate for compat) | `ratatui::widgets::Tabs` | `tui_easy::widget::TabNav` |
+| `sparkline` | Bar-chart sparkline widget (empty gate) | `ratatui::widgets::Sparkline` | `tui_easy::widget::Sparkline` |
+| `list` | Scrollable list widget (empty gate) | `ratatui::widgets::{List, ListState}` | `tui_easy::widget::{List, ListState}` |
+| `spinner` | Animated spinner glyph | [`ratatui-cheese`](https://crates.io/crates/ratatui-cheese) · v0.7 | `tui_easy::widget::Spinner` · `tui_easy::spinner::{SpinnerState, SpinnerType}` |
+| `hyperlink` | OSC 8 hyperlink widget | [`hyperrat`](https://crates.io/crates/hyperrat) · v0.1 | `tui_easy::widget::Link` · `tui_easy::hyperlink` |
+| `scroller` | Stateful scrollable viewport | [`tui-scrollview`](https://crates.io/crates/tui-scrollview) · v0.6 | `tui_easy::widget::ScrollView` · `tui_easy::scroller::{ScrollView, ScrollViewState, ScrollbarVisibility}` |
+| `popup` | Popup overlay with drag support | [`tui-popup`](https://crates.io/crates/tui-popup) · v0.7 | `tui_easy::widget::{Popup, PopupState}` |
+| `big-text` | Large pixel text (font8x8) | [`tui-big-text`](https://crates.io/crates/tui-big-text) · v0.8 | `tui_easy::widget::{BigText, PixelSize}` |
+| `tree` | Stateful file tree with fold/expand | [`tui-tree-widget`](https://crates.io/crates/tui-tree-widget) · v0.24 | `tui_easy::widget::{Tree, TreeItem, TreeState, Flattened}` |
+| `styles` | `anstyle` → ratatui bridge | `tui-easy-styles` (in-house) | `tui_easy::widget::{styled_span, styled_line}` · `tui_easy::styles` |
+| `wrap` | Word-wrap helpers for `Line`/`Span` | `tui-easy-wrap` (in-house) | `tui_easy::wrap::{word_wrap_line, word_wrap_lines_borrowed}` |
+| `log_view` | Per-tab scroll-log helper (aggregates `styles` + `scroller` + `wrap`) | Combo | `tui_easy::tab_log::TabLog` |
 
 Enable multiple features at once:
 
 ```toml
-tornado = { path = "../arniko/crates/tornado", features = [
+tui-easy = { git = "https://github.com/nixpt/tui-easy", features = [
     "spinner", "scroller", "popup", "log_view",
 ] }
 ```
@@ -77,16 +77,16 @@ tornado = { path = "../arniko/crates/tornado", features = [
 Or use the umbrella's test surface to validate your feature combination:
 
 ```sh
-cargo test -p tornado --features "spinner,scroller,popup,hyperlink,big-text,tree,styles,wrap,log_view"
+cargo test -p tui-easy --features "spinner,scroller,popup,hyperlink,big-text,tree,styles,wrap,log_view"
 ```
 
 ---
 
 ## Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────────────┐
-│  tornado (umbrella crate)                           │
+│  tui-easy (umbrella crate)                           │
 │                                                     │
 │  ┌─ Core ──────────────────────────────────┐        │
 │  │  TuiApp trait    ↔  run_app() loop      │        │
@@ -117,9 +117,9 @@ cargo test -p tornado --features "spinner,scroller,popup,hyperlink,big-text,tree
 
 ### Core infrastructure
 
-Tornado handles all the boilerplate so each app only needs to implement the [`TuiApp`] trait:
+Tui Easy handles all the boilerplate so each app only needs to implement the [`TuiApp`] trait:
 
-```rust
+```rust,ignore
 pub trait TuiApp {
     /// Render the frame — called once per tick.
     fn draw(&mut self, frame: &mut ratatui::Frame);
@@ -134,13 +134,13 @@ pub trait TuiApp {
     fn should_quit(&self) -> bool;
 
     /// Application name (shown in panics if terminal isn't restored).
-    fn name(&self) -> &str { "tornado" }
+    fn name(&self) -> &str { "tui-easy" }
 }
 ```
 
 The event loop lives in [`run_app()`]:
 
-```rust
+```rust,ignore
 pub fn run_app(app: impl TuiApp, tick_rate: Duration) -> std::io::Result<()>
 ```
 
@@ -154,8 +154,8 @@ pub fn run_app(app: impl TuiApp, tick_rate: Duration) -> std::io::Result<()>
 
 Themes are declared as renderer-agnostic [`ThemeColors`] (with `Rgb` values) and converted to ratatui-specific colours via [`to_ratatui()`]:
 
-```rust
-use tornado::theme::{ThemeColors, RatatuiThemeColors};
+```rust,ignore
+use tui_easy::theme::{ThemeColors, RatatuiThemeColors};
 
 let colors: ThemeColors = ThemeColors::default();        // dark navy/cyan
 let light:  ThemeColors = ThemeColors::light();           // light variant
@@ -183,14 +183,14 @@ let rt:     RatatuiThemeColors = colors.to_ratatui();
 
 The simplest integrated example — a title row, a body, and a themed status bar footer.
 
-```rust
+```rust,ignore
 use std::time::Duration;
 use ratatui::layout::{Constraint, Direction, Layout};
 use ratatui::widgets::Paragraph;
-use tornado::event::TuiEvent;
-use tornado::theme::RatatuiThemeColors;
-use tornado::widget::status_bar;
-use tornado::{run_app, TuiApp};
+use tui_easy::event::TuiEvent;
+use tui_easy::theme::RatatuiThemeColors;
+use tui_easy::widget::status_bar;
+use tui_easy::{run_app, TuiApp};
 
 struct App { quit: bool, theme: RatatuiThemeColors }
 
@@ -203,7 +203,7 @@ impl TuiApp for App {
             .split(area);
 
         // Body
-        frame.render_widget(Paragraph::new("Hello tornado!"), chunks[0]);
+        frame.render_widget(Paragraph::new("Hello tui-easy!"), chunks[0]);
 
         // Footer
         frame.render_widget(
@@ -224,10 +224,10 @@ impl TuiApp for App {
 
 ### 2. Tab navigation with TabNav
 
-Uses `tornado::widget::TabNav` (re-export of `ratatui::widgets::Tabs`):
+Uses `tui_easy::widget::TabNav` (re-export of `ratatui::widgets::Tabs`):
 
-```rust
-use tornado::widget::TabNav;
+```rust,ignore
+use tui_easy::widget::TabNav;
 use ratatui::text::Line;
 
 let tabs = TabNav::new(
@@ -241,8 +241,8 @@ let tabs = TabNav::new(
 
 ### 3. Spinner in the title bar
 
-```rust
-use tornado::spinner::{SpinnerState, SpinnerType};
+```rust,ignore
+use tui_easy::spinner::{SpinnerState, SpinnerType};
 use std::time::Instant;
 
 let mut last_tick = Instant::now();
@@ -270,8 +270,8 @@ frame.render_widget(
 
 A rolling-c sine-wave sparkline next to the status bar:
 
-```rust
-use tornado::widget::Sparkline;
+```rust,ignore
+use tui_easy::widget::Sparkline;
 use ratatui::symbols::bar;
 
 // Update a ring buffer each tick:
@@ -302,10 +302,10 @@ frame.render_widget(
 
 ### 5. Scrollable log with TabLog
 
-The `log_view` feature aggregates `tornado-styles` + `tui-scrollview` + `tornado-wrap` into a single helper. Each `TabLog` owns a virtual-scroll buffer, anchor registry, and pin-to-bottom tracking.
+The `log_view` feature aggregates `tui-easy-styles` + `tui-scrollview` + `tui-easy-wrap` into a single helper. Each `TabLog` owns a virtual-scroll buffer, anchor registry, and pin-to-bottom tracking.
 
-```rust
-use tornado::tab_log::TabLog;
+```rust,ignore
+use tui_easy::tab_log::TabLog;
 
 // Create a log buffer:
 let mut log = TabLog::new(80, 240);
@@ -334,8 +334,8 @@ log.reset_to_bottom_if_pinned(); // re-pin on new content
 
 A centered popup that appears on a keypress:
 
-```rust
-use tornado::widget::{Popup, PopupState};
+```rust,ignore
+use tui_easy::widget::{Popup, PopupState};
 
 let mut popup_state = PopupState::default();
 let mut popup_visible = false;
@@ -362,11 +362,11 @@ if self.popup_visible {
 
 Large pixel text using font8x8 glyphs:
 
-```rust
-use tornado::widget::{BigText, PixelSize};
+```rust,ignore
+use tui_easy::widget::{BigText, PixelSize};
 
 let big = BigText::builder()
-    .lines(vec![Line::from("TORNADO")])
+    .lines(vec![Line::from("TUI EASY")])
     .pixel_size(PixelSize::Full)
     .style(Style::new().fg(Color::Cyan).bold())
     .build();
@@ -377,8 +377,8 @@ frame.render_widget(big, chunks[0]);
 
 A stateful tree with fold/expand:
 
-```rust
-use tornado::widget::{Tree, TreeItem, TreeState};
+```rust,ignore
+use tui_easy::widget::{Tree, TreeItem, TreeState};
 
 // Build items (TreeItem::new returns Result):
 let items = vec![
@@ -405,9 +405,9 @@ self.tree_state.key_left();   // h / ← collapse
 
 If you have text styled with `anstyle::Style` (e.g. from a markdown renderer or a pipe), convert it to ratatui primitives:
 
-```rust
-use tornado::widget::{styled_span, styled_line};
-use tornado_styles::Style as AnsiStyle;
+```rust,ignore
+use tui_easy::widget::{styled_span, styled_line};
+use tui_easy_styles::Style as AnsiStyle;
 
 let span = styled_span("bold red text", AnsiStyle::new().bold().fg_color(Some(Color::Ansi(AnsiColor::Red))));
 let line = styled_line("green italic summary", AnsiStyle::new().italic().fg_color(Some(Color::Ansi(AnsiColor::Green))));
@@ -417,8 +417,8 @@ let line = styled_line("green italic summary", AnsiStyle::new().italic().fg_colo
 
 Wrap a ratatui `Line` to a max column width while preserving per-span styles:
 
-```rust
-use tornado::wrap::{word_wrap_line, RtOptions};
+```rust,ignore
+use tui_easy::wrap::{word_wrap_line, RtOptions};
 
 let line = Line::from(vec!["long text that needs wrapping ".red(), "at 30 columns".into()]);
 let wrapped = word_wrap_line(&line, RtOptions::new(30).initial_indent(Line::from("→ ")));
@@ -430,18 +430,18 @@ let wrapped = word_wrap_line(&line, RtOptions::new(30).initial_indent(Line::from
 
 Three example apps ship with the crate, exercising different feature combinations:
 
-### `tornado-showcase` (all features)
+### `tui-easy-showcase` (all features)
 
-A 5-tab visual demo exercising **every** tornado widget in one app.
+A 5-tab visual demo exercising **every** tui-easy widget in one app.
 
 ```sh
-cargo run -p tornado-showcase
-cargo test  -p tornado-showcase   # 8 TestBackend smoke tests
+cargo run -p tui-easy-showcase
+cargo test  -p tui-easy-showcase   # 8 TestBackend smoke tests
 ```
 
 | Tab | Widgets |
 |---|---|
-| Welcome | `BigText` (TORNADO) + `Link` (GitHub, Ratatui) |
+| Welcome | `BigText` (TUI EASY) + `Link` (GitHub, Ratatui) |
 | Sparkline | Live sine-wave `Sparkline` with bar set |
 | List | 50-item scrollable `List` with highlight |
 | Tree | Mock filesystem `Tree` with fold/expand |
@@ -469,27 +469,27 @@ cargo test  -p scroll-log   # inline smoke tests
 
 ## Cross-project usage
 
-The [spores project](https://github.com/openko-network/spores) uses tornado as its TUI runtime. It depends on tornado's **core infrastructure** — the `TuiApp` trait, `run_app()`, theme types, and event system — without enabling any widget features:
+The [spores project](https://github.com/openko-network/spores) uses tui-easy as its TUI runtime. It depends on tui-easy's **core infrastructure** — the `TuiApp` trait, `run_app()`, theme types, and event system — without enabling any widget features:
 
 ```toml
 # spores/Cargo.toml
 [dependencies]
-tornado = { path = "../../arniko/crates/tornado", optional = true }
+tui-easy = { git = "https://github.com/nixpt/tui-easy", optional = true }
 
 [features]
-spores-tui = ["dep:ratatui", "dep:crossterm", "dep:tornado"]
+spores-tui = ["dep:ratatui", "dep:crossterm", "dep:tui-easy"]
 ```
 
-```rust
+```rust,ignore
 // spores/src/tui/mod.rs
-impl tornado::TuiApp for App {
+impl tui_easy::TuiApp for App {
     fn draw(&mut self, frame: &mut ratatui::Frame) { /* custom ui.rs */ }
-    fn handle_event(&mut self, event: tornado::event::TuiEvent) { /* ... */ }
+    fn handle_event(&mut self, event: tui_easy::event::TuiEvent) { /* ... */ }
     fn should_quit(&self) -> bool { /* ... */ }
 }
 
 fn main() {
-    tornado::run_app(app, std::time::Duration::from_millis(250))?;
+    tui_easy::run_app(app, std::time::Duration::from_millis(250))?;
 }
 ```
 
@@ -500,14 +500,14 @@ fn main() {
 Every example app and the core crate include `#[cfg(test)]` smoke tests backed by `ratatui::backend::TestBackend`. These render into an off-screen buffer and assert on cell content — no real terminal needed.
 
 ```sh
-# Run all tornado-related tests:
-cargo test -p tornado -p tornado-showcase -p multi-tab-log -p scroll-log
+# Run all tui-easy-related tests:
+cargo test -p tui-easy -p tui-easy-showcase -p multi-tab-log -p scroll-log
 
 # Run with all features to test every widget combination:
-cargo test -p tornado --all-features
+cargo test -p tui-easy --all-features
 ```
 
-Integration tests live under `crates/tornado/tests/` and are gated per-feature:
+Integration tests live under `crates/tui-easy/tests/` and are gated per-feature:
 - `styles_integration` — anstyle → ratatui roundtrip
 - `hyperlink_integration` — OSC 8 encoding
 - `spinner_integration` — frame advance via tick
@@ -541,7 +541,7 @@ Community widget crates carry their own licenses (all permissive):
 - `tui-big-text` · MIT / Apache-2.0
 - `tui-tree-widget` · MIT
 
-[`TuiApp`]: https://docs.rs/tornado/latest/tornado/trait.TuiApp.html
-[`run_app()`]: https://docs.rs/tornado/latest/tornado/fn.run_app.html
-[`ThemeColors`]: https://docs.rs/tornado/latest/tornado/theme/struct.ThemeColors.html
-[`to_ratatui()`]: https://docs.rs/tornado/latest/tornado/theme/struct.ThemeColors.html#method.to_ratatui
+[`TuiApp`]: https://docs.rs/tui-easy/latest/tui-easy/trait.TuiApp.html
+[`run_app()`]: https://docs.rs/tui-easy/latest/tui-easy/fn.run_app.html
+[`ThemeColors`]: https://docs.rs/tui-easy/latest/tui-easy/theme/struct.ThemeColors.html
+[`to_ratatui()`]: https://docs.rs/tui-easy/latest/tui-easy/theme/struct.ThemeColors.html#method.to_ratatui

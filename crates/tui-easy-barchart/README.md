@@ -1,4 +1,4 @@
-# `tornado-barchart`
+# `tui-easy-barchart`
 
 Round-12 of the [awesome-ratatui adoption series](../../README.md) — vendored
 [`ratatui::widgets::BarChart`](https://docs.rs/ratatui/latest/ratatui/widgets/struct.BarChart.html)
@@ -26,7 +26,7 @@ See [`LICENSE-MIT`](./LICENSE-MIT), [`LICENSE-APACHE`](./LICENSE-APACHE), and
 ## Concretely STATELESS — different from round-11
 
 The vendored `BarChart` does NOT have a `StatefulWidget` counterpart, so the
-round-11 E0034 carve-out pattern does NOT apply. The `crates/tornado-list`
+round-11 E0034 carve-out pattern does NOT apply. The `crates/tui-easy-list`
 `§3` module doc is the canonical StatefulWidget-vendoring precedent;
 round-12 deliberately diverges.
 

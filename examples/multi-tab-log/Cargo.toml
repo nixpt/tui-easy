@@ -12,7 +12,7 @@ repository.workspace = true
 # a 12-col Sparkline into the right flank of the existing 2-row
 # status_bar — no layout shift, just a new rolling-c spark metric
 # visible alongside the text footer.
-description = "Round 8/10 example: multi-tab log consumer composing round-9 TabLog helper + tornado::widget::TabNav + round-10 Sparkline in status_bar footer"
+description = "Round 8/10 example: multi-tab log consumer composing round-9 TabLog helper + tui-easy::widget::TabNav + round-10 Sparkline in status_bar footer"
 publish = false
 
 [[bin]]
@@ -27,13 +27,13 @@ path = "src/main.rs"
 #   - `wrap`     — exercises the inline smoke test for `word_wrap_line`.
 #   - `hyperlink` — OSC 8 anchor rendering for the per-row URLs.
 #   - `styles`   — `HyperlinkTarget` plumbing shared with TabLog.
-#   - `tabs`     — round-6 catch-up: `tornado::widget::TabNav`.
+#   - `tabs`     — round-6 catch-up: `tui-easy::widget::TabNav`.
 #   - `sparkline` — round-10: 12-col Sparkline slotted into the
 #                  right flank of the existing 2-row status_bar
 #                  footer (per round-10 design memo D5/D9). The
 #                  widget shows the rolling row-append cadence
 #                  of the active tab over the last ~12 frames.
-tornado = { workspace = true, features = [
+tui-easy = { workspace = true, features = [
     "log_view",
     "spinner",
     "wrap",
@@ -42,9 +42,9 @@ tornado = { workspace = true, features = [
     "tabs",
     "sparkline",
 ] }
-# Pattern-matching on KeyCode / KeyModifiers — not re-exported by tornado.
+# Pattern-matching on KeyCode / KeyModifiers — not re-exported by tui-easy.
 crossterm = "0.28"
-# ratatui is a transitive dep of tornado, but declared explicitly here
+# ratatui is a transitive dep of tui-easy, but declared explicitly here
 # so `cargo tree -p multi-tab-log` shows the upstream type surface
 # (`Tabs`, `Layout`, `Paragraph`, `Frame`, `Buffer`, etc.) under the
 # example's own node.

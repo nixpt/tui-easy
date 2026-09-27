@@ -1,10 +1,10 @@
-//! End-to-end consumer of every borrow-debris sibling shipped in tornado.
+//! End-to-end consumer of every borrow-debris sibling shipped in tui_easy.
 //!
 //! Round 7 wired five vendored siblings into a single [`TuiApp`]. Round 9
 //! refactored the per-tab scroll log mechanics (`rows` registry, OSC-8
 //! anchor assignment, `ScrollView` + `ScrollViewState`, rebuild loop,
 //! `top_anchor` lookup, `pinned_to_bottom` tracking) into a shared
-//! primitive: `tornado::tab_log::TabLog` (behind the `log_view`
+//! primitive: `tui_easy::tab_log::TabLog` (behind the `log_view`
 //! umbrella feature). This file is now a thin orchestrator on top of
 //! that helper.
 //!
@@ -12,11 +12,11 @@
 //!
 //! | Region   | Source crate        | Surface in app                                            |
 //! |----------|---------------------|-----------------------------------------------------------|
-//! | Title    | `tornado-spinner`   | animated `SpinnerState` driven by `Tick`-elapsed time     |
-//! | Body     | `tornado::tab_log`  | `TabLog::scroll_view()` + `TabLog::scroll_state_mut()`    |
-//! | Rows     | `tornado::tab_log`  | per-row OSC-8 anchor registry + top-of-viewport lookup    |
-//! | Footer   | `tornado::widget`   | block-bordered `status_bar` reading offset + top anchor   |
-//! | Wrap     | `tornado-wrap`      | `word_wrap_line` exercised in the inline smoke test       |
+//! | Title    | `tui_easy-spinner`   | animated `SpinnerState` driven by `Tick`-elapsed time     |
+//! | Body     | `tui_easy::tab_log`  | `TabLog::scroll_view()` + `TabLog::scroll_state_mut()`    |
+//! | Rows     | `tui_easy::tab_log`  | per-row OSC-8 anchor registry + top-of-viewport lookup    |
+//! | Footer   | `tui_easy::widget`   | block-bordered `status_bar` reading offset + top anchor   |
+//! | Wrap     | `tui-easy-wrap`      | `word_wrap_line` exercised in the inline smoke test       |
 //!
 //! # Run it
 //!
@@ -50,12 +50,12 @@ use ratatui::buffer::Buffer;
 #[cfg(test)]
 use ratatui::layout::Position;
 
-use tornado::event::TuiEvent;
-use tornado::spinner::{SpinnerState, SpinnerType};
-use tornado::tab_log::TabLog;
-use tornado::theme::RatatuiThemeColors;
-use tornado::widget::status_bar;
-use tornado::{run_app, TuiApp};
+use tui_easy::event::TuiEvent;
+use tui_easy::spinner::{SpinnerState, SpinnerType};
+use tui_easy::tab_log::TabLog;
+use tui_easy::theme::RatatuiThemeColors;
+use tui_easy::widget::status_bar;
+use tui_easy::{run_app, TuiApp};
 
 // ── Constants ─────────────────────────────────────────────────────────────
 
@@ -122,17 +122,17 @@ impl ScrollLogApp {
             last_tick: Instant::now(),
             tick_count: 0,
             quit: false,
-            theme: tornado::theme::ThemeColors::default().to_ratatui(),
+            theme: tui_easy::theme::ThemeColors::default().to_ratatui(),
         };
 
         // Seed with the boot sequence. Every row carries a URL so the
         // status-bar's `top_anchor()` always has something to display.
         for (i, msg) in [
             "workspace loaded",
-            "compiling tornado-styles",
-            "compiling tornado-wrap",
-            "compiling tornado-hyperlink",
-            "compiling tornado-spinner",
+            "compiling tui-easy-styles",
+            "compiling tui-easy-wrap",
+            "compiling tui_easy-hyperlink",
+            "compiling tui_easy-spinner",
         ]
         .iter()
         .enumerate()
@@ -140,7 +140,7 @@ impl ScrollLogApp {
             app.push_row(
                 msg.to_string(),
                 Level::Info,
-                Some(format!("https://github.com/nixpt/arniko/blob/main/{i}")),
+                Some(format!("https://github.com/nixpt/tui-easy/blob/main/{i}")),
             );
         }
 
@@ -193,7 +193,7 @@ impl TuiApp for ScrollLogApp {
                 ),
                 Level::Done,
                 Some(format!(
-                    "https://github.com/nixpt/arniko/actions/runs/{}",
+                    "https://github.com/nixpt/tui-easy/actions/runs/{}",
                     self.tasks_complete * 1000
                 )),
             );
@@ -533,7 +533,7 @@ mod tests {
         // owned `RtOptions`. This is a reachability + length sanity
         // check, not a deep semantic test of the upstream library.
         let line = Line::raw("the quick brown fox jumps over the lazy dog and keeps running");
-        let wrapped = tornado::wrap::word_wrap_line(&line, tornado::wrap::RtOptions::new(20));
+        let wrapped = tui_easy::wrap::word_wrap_line(&line, tui_easy::wrap::RtOptions::new(20));
         assert!(
             wrapped.len() >= 2,
             "a 60-char line wrapped to 20 cols must split into >= 2 lines (got {})",

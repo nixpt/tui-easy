@@ -1,9 +1,9 @@
-//! Integration test for `tornado` + `tornado-styles` (`--features styles`).
+//! Integration test for `tui_easy` + `tui-easy-styles` (`--features styles`).
 //!
 //! Guards the bridge end-to-end:
-//!  * `tornado::widget::ansi_color` / `ansi_to_style` re-exports the
-//!    `tornado-styles` conversion helpers.
-//!  * `tornado::widget::styled_line` / `styled_span` layer the bridge on top
+//!  * `tui_easy::widget::ansi_color` / `ansi_to_style` re-exports the
+//!    `tui-easy-styles` conversion helpers.
+//!  * `tui_easy::widget::styled_line` / `styled_span` layer the bridge on top
 //!    of plain text to produce ready-to-render ratatui primitives.
 //!  * The `HyperlinkTarget` re-export (`AnsiHyperlinkTarget`) is reachable
 //!    from the widget module path.
@@ -16,9 +16,9 @@
 #![cfg(feature = "styles")]
 
 use ratatui::style::{Color as RColor, Modifier, Style as RStyle};
-use tornado::styles::{AnsiColor, Color as AnsiRgb, RgbColor, Style as AnsiStyle};
-use tornado::theme::ThemeColors;
-use tornado::widget::{AnsiHyperlinkTarget, ansi_color, ansi_to_style, styled_line, styled_span};
+use tui_easy::styles::{AnsiColor, Color as AnsiRgb, RgbColor, Style as AnsiStyle};
+use tui_easy::theme::ThemeColors;
+use tui_easy::widget::{AnsiHyperlinkTarget, ansi_color, ansi_to_style, styled_line, styled_span};
 
 #[test]
 fn ansi_to_style_round_trips_fg_bg_and_modifiers() {
@@ -96,11 +96,11 @@ fn hyperlink_target_alias_is_constructible_and_type_equal() {
     assert_eq!(h.id, 42);
 
     // 2. Compile-time type-identity: `AnsiHyperlinkTarget` and
-    //    `tornado::styles::HyperlinkTarget` must be the exact same type.
+    //    `tui_easy::styles::HyperlinkTarget` must be the exact same type.
     //    If the alias were re-vended (e.g. wrapped), this coercion would
     //    fail to compile. The fn is `_`-prefixed so a dead-code lint
     //    doesn't fire.
-    fn _alias_is_type_equal(h: AnsiHyperlinkTarget) -> tornado::styles::HyperlinkTarget {
+    fn _alias_is_type_equal(h: AnsiHyperlinkTarget) -> tui_easy::styles::HyperlinkTarget {
         h
     }
     let _ = _alias_is_type_equal;

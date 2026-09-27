@@ -1,0 +1,23 @@
+/target/
+**/target/
+
+# scratch / temp files
+*.bak
+*.tmp
+
+# editor
+.vscode/
+.idea/
+*.swp
+
+# secret-shaped files — defense in depth, none should ever land here
+*.env
+.env.*
+!.env.example
+*.pem
+*.key
+id_rsa*
+id_ed25519*
+credentials*.json
+.netrc
+secrets.json

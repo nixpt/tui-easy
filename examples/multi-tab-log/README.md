@@ -9,10 +9,10 @@ running concurrently across five distinct log streams.
 
 | Region | Source | Role |
 |--------|--------|------|
-| Title (1 row) | `tornado-spinner` | Global `SpinnerState` + tab indicator |
+| Title (1 row) | `tui-easy-spinner` | Global `SpinnerState` + tab indicator |
 | TabNav (3 rows) | `ratatui::widgets::Tabs` | Five stream titles, active highlight |
-| Body (`Min 3`) | `tornado::tab_log::TabLog` | Active tab's scroll viewport |
-| Footer (2 rows) | `tornado::widget::status_bar` | Offset, top-anchor, pin ratio |
+| Body (`Min 3`) | `tui_easy::tab_log::TabLog` | Active tab's scroll viewport |
+| Footer (2 rows) | `tui_easy::widget::status_bar` | Offset, top-anchor, pin ratio |
 
 ## Run it
 

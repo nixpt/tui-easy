@@ -1,4 +1,4 @@
-//! # `tornado-barchart`
+//! # `tui-easy-barchart`
 //!
 //! Vendored `BarChart` + `BarGroup` + `Bar` + `BarSet` from
 //! [`ratatui`](https://github.com/ratatui/ratatui) **v0.30.0**. This crate is
@@ -27,7 +27,7 @@
 //!
 //! ## (3) Constitutional defenses — `MOOT` for round-12
 //!
-//! Round-11 (`crates/tornado-list`) introduced two constitutional precedents:
+//! Round-11 (`crates/tui_easy-list`) introduced two constitutional precedents:
 //!
 //! - **§3 E0034 carve-out** — required when a widget has BOTH a `Widget`
 //!   impl AND a `StatefulWidget` impl in scope.
@@ -76,7 +76,7 @@
 //!   test data only, no wall-clock.
 //! - **Tautological assertions** — round-11 v7 carry — only positive
 //!   cell-content assertions, no buffer-length-inverted tricks.
-//! - **Duplicate imports** — single grouped `use tornado::widget::…`
+//! - **Duplicate imports** — single grouped `use tui_easy::widget::…`
 //!   pattern in the example.
 //!
 //! ## (6) Upstream reference
@@ -93,7 +93,7 @@ use ratatui::widgets::Block;
 
 // Re-export the upstream ratatui traits at the crate root so downstream
 // consumers and the integration test can do
-// `use tornado_barchart::{BarChart, Bar, BarGroup, BarSet, Widget};`.
+// `use tui_easy_barchart::{BarChart, Bar, BarGroup, BarSet, Widget};`.
 pub use ratatui::widgets::Widget;
 
 // ===========================================================================

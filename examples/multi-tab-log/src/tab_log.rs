@@ -18,7 +18,7 @@
 //! This module owns the seeding recipes and the update-pumping
 //! helpers; `main.rs` is a thin orchestrator on top.
 
-use tornado::tab_log::TabLog;
+use tui_easy::tab_log::TabLog;
 
 /// The five lab streams round-8 ships out-of-the-box. Anchored to the
 /// `MultiTabApp::handle_event` keymap: keys `1..=5` jump directly to
@@ -57,7 +57,7 @@ fn seed_one(title: &str, w: u16, h: u16) -> TabLog {
             "INFO ".to_string(),
             format!("{title} step {i}"),
             Some(format!(
-                "https://github.com/nixpt/arniko/blob/main/{title}/{i}"
+                "https://github.com/nixpt/tui-easy/blob/main/{title}/{i}"
             )),
         );
     }

@@ -1,21 +1,21 @@
 [package]
-name = "tornado-showcase"
+name = "tui-easy-showcase"
 version = "0.1.0"
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
 homepage.workspace = true
 repository.workspace = true
-description = "Comprehensive visual demo showcasing every tornado widget — tabs, spinner, sparkline, list, tree, popup, big-text, hyperlink, and scrollview"
+description = "Comprehensive visual demo showcasing every tui-easy widget — tabs, spinner, sparkline, list, tree, popup, big-text, hyperlink, and scrollview"
 publish = false
 
 [[bin]]
-name = "tornado-showcase"
+name = "tui-easy-showcase"
 path = "src/main.rs"
 
 [dependencies]
-# All tornado widget features enabled — this is the showcase!
-tornado = { workspace = true, features = [
+# All tui-easy widget features enabled — this is the showcase!
+tui-easy = { workspace = true, features = [
     "log_view",
     "spinner",
     "wrap",

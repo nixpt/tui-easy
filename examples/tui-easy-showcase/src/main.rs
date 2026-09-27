@@ -1,7 +1,7 @@
-//! # tornado-showcase
+//! # tui-easy-showcase
 //!
 //! A comprehensive visual demo that exercises **every** widget exposed by the
-//! `tornado` umbrella crate in one TUI app.  Each tab demonstrates one or more
+//! `tui_easy` umbrella crate in one TUI app.  Each tab demonstrates one or more
 //! widget types so you can see them side by side (and in the status bar).
 //!
 //! ## Widgets on display
@@ -22,7 +22,7 @@
 //! ## Run it
 //!
 //! ```sh
-//! cargo run -p tornado-showcase
+//! cargo run -p tui-easy-showcase
 //! ```
 //!
 //! ## Controls
@@ -46,15 +46,15 @@ use ratatui::text::{Line, Span, Text};
 use ratatui::widgets::{Block, Borders, Paragraph};
 use ratatui::symbols::bar;
 
-use tornado::event::TuiEvent;
-use tornado::spinner::{SpinnerState, SpinnerType};
-use tornado::tab_log::TabLog;
-use tornado::theme::RatatuiThemeColors;
-use tornado::widget::{
+use tui_easy::event::TuiEvent;
+use tui_easy::spinner::{SpinnerState, SpinnerType};
+use tui_easy::tab_log::TabLog;
+use tui_easy::theme::RatatuiThemeColors;
+use tui_easy::widget::{
     status_bar, BigText, Link, List, ListState, PixelSize, Popup, PopupState, Sparkline, TabNav,
     Tree, TreeItem, TreeState,
 };
-use tornado::{run_app, TuiApp};
+use tui_easy::{run_app, TuiApp};
 
 // ── Constants ─────────────────────────────────────────────────────────────
 
@@ -106,7 +106,7 @@ impl ShowcaseApp {
         let mut app = Self {
             active_tab: 0,
             spinner_state: SpinnerState::new(SpinnerType::Dot),
-            theme: tornado::theme::ThemeColors::default().to_ratatui(),
+            theme: tui_easy::theme::ThemeColors::default().to_ratatui(),
             last_tick: Instant::now(),
             tick_count: 0,
             sparkline_ring: vec![1; SPARKLINE_RING_LEN],
@@ -163,7 +163,7 @@ impl ShowcaseApp {
 
 impl TuiApp for ShowcaseApp {
     fn name(&self) -> &str {
-        "tornado-showcase"
+        "tui-easy-showcase"
     }
 
     fn should_quit(&self) -> bool {
@@ -352,7 +352,7 @@ impl TuiApp for ShowcaseApp {
         // ── Title ───────────────────────────────────────────────
         let glyph = self.spinner_state.frame_str();
         let title_text = format!(
-            " {glyph} tornado-showcase │ {} │ tick {}",
+            " {glyph} tui-easy-showcase │ {} │ tick {}",
             self.tab_name(),
             self.tick_count,
         );
@@ -455,9 +455,9 @@ impl ShowcaseApp {
             ])
             .split(area);
 
-        // ── BigText: large pixel rendering of "TORNADO" ────────
+        // ── BigText: large pixel rendering of "TUI EASY" ────────
         let big = BigText::builder()
-            .lines(vec![Line::from("TORNADO")])
+            .lines(vec![Line::from("TUI EASY")])
             .pixel_size(PixelSize::Full)
             .style(
                 Style::default()
@@ -482,7 +482,7 @@ impl ShowcaseApp {
         // Description paragraph.
         let desc = Paragraph::new(Text::from(vec![
             Line::from(Span::styled(
-                "Welcome to the tornado widget showcase!",
+                "Welcome to the tui_easy widget showcase!",
                 Style::default().fg(Color::Green),
             )),
             Line::from(""),
@@ -492,7 +492,7 @@ impl ShowcaseApp {
         frame.render_widget(desc, lower[0]);
 
         // GitHub link widget.
-        let gh_link = Link::new("github.com/nixpt/arniko", "https://github.com/nixpt/arniko")
+        let gh_link = Link::new("github.com/nixpt/tui-easy", "https://github.com/nixpt/tui-easy")
             .style(
                 Style::default()
                     .fg(Color::Blue)
@@ -846,7 +846,7 @@ mod tests {
         // 1. Title row (y=0) carries the app name and tick counter.
         let title_line = row_text(&buf, 0);
         assert!(
-            title_line.contains("tornado-showcase"),
+            title_line.contains("tui-easy-showcase"),
             "title row missing app name: {title_line:?}"
         );
         assert!(
@@ -884,11 +884,11 @@ mod tests {
         // 3. Body (y=4..height-2) contains the Welcome tab content.
         let body = rows_text(&buf, 4, buf.area.height.saturating_sub(2));
         assert!(
-            body.contains("Welcome to the tornado widget showcase!"),
+            body.contains("Welcome to the tui_easy widget showcase!"),
             "body missing welcome text: {body:?}"
         );
         assert!(
-            body.contains("github.com/nixpt/arniko"),
+            body.contains("github.com/nixpt/tui-easy"),
             "body missing GitHub link label: {body:?}"
         );
         assert!(

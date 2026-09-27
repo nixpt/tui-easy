@@ -110,9 +110,9 @@ pub struct HyperlinkTarget {
 }
 
 // Re-export the anstyle types this crate consumes so dependents can route them
-// via `tornado-styles` rather than taking a direct `anstyle` dep. Lets the
-// `tornado::widget::styled_span` / `styled_line` API accept an `anstyle::Style`
-// without requiring `anstyle` to be a public dependency of `tornado`.
+// via `tui-easy-styles` rather than taking a direct `anstyle` dep. Lets the
+// `tui_easy::widget::styled_span` / `styled_line` API accept an `anstyle::Style`
+// without requiring `anstyle` to be a public dependency of `tui_easy`.
 pub use anstyle::{AnsiColor, Color, RgbColor, Style};
 
 #[cfg(test)]

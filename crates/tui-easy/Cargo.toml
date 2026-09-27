@@ -1,5 +1,5 @@
 [package]
-name = "tornado"
+name = "tui-easy"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -16,18 +16,18 @@ tracing = "0.1"
 # Optional — small ANSI/ratatui bridge helpers + HyperlinkTarget type,
 # borrowed from xai-grok-markdown. Only added when the `styles` feature
 # is enabled, so consumers that don't need them don't pay for them.
-tornado-styles = { workspace = true, optional = true }
+tui-easy-styles = { workspace = true, optional = true }
 # Optional — textwrap word-wrap helpers over ratatui Line/Span,
 # borrowed from xai-ratatui-textarea. Gated behind the `wrap` feature
 # (and pulls in `textwrap` transitively).
-tornado-wrap = { workspace = true, optional = true }
+tui-easy-wrap = { workspace = true, optional = true }
 # Optional — OSC 8 hyperlink widget for ratatui, from the
 # hyperrat crate (dual MIT/Unlicense). Gated behind the
-# `hyperlink` feature. Replaces the vendored `tornado-hyperlink`.
+# `hyperlink` feature. Replaces the vendored `tui-easy-hyperlink`.
 hyperrat = { workspace = true, optional = true }
 # Optional — bubbletea-inspired spinner widget for ratatui, from the
 # ratatui-cheese crate (MIT). Gated behind the `spinner` feature.
-# Replaces the vendored `tornado-spinner`. The widget's
+# Replaces the vendored `tui-easy-spinner`. The widget's
 # `SpinnerState::tick(Duration)` accepts the elapsed time of one
 # `run_app` loop iteration and advances frames at the cadence defined
 # by `SpinnerType::interval`.
@@ -35,7 +35,7 @@ ratatui-cheese = { workspace = true, optional = true }
 # Optional — stateful scrolling view for ratatui, from the
 # tui-scrollview crate (Josh McKinney, dual MIT/Apache-2.0). Gated
 # behind the `scroller` feature. Replaces the vendored
-# `tornado-scrollview`.
+# `tui-easy-scrollview`.
 tui-scrollview = { workspace = true, optional = true }
 # Optional — Tabs widget for ratatui. Since ratatui 0.30
 # provides `ratatui::widgets::Tabs` natively, this feature
@@ -45,44 +45,44 @@ tui-scrollview = { workspace = true, optional = true }
 # Optional — Sparkline widget. `ratatui::widgets::Sparkline` is
 # always available (ratatui is a hard dep); the `sparkline` feature
 # is an empty gate for backward compatibility with existing
-# consumers that enable it. Replaces the vendored `tornado-sparkline`.
+# consumers that enable it. Replaces the vendored `tui-easy-sparkline`.
 # Optional — List widget. `ratatui::widgets::{List, ListState}` are
 # always available (ratatui is a hard dep); the `list` feature is an
 # empty gate for backward compatibility. Replaces the vendored
-# `tornado-list`. Note: `List::new(items)` accepts `Vec<Text>` via
+# `tui-easy-list`. Note: `List::new(items)` accepts `Vec<Text>` via
 # `Into<ListItem>`, so the consumer-facing API is identical.
 # Optional — Popup widget from the tui-popup crate (MIT).
 # A simple popup with bordered box, title, body text, and optional
 # drag-repositioning. Gated behind the `popup` feature.
-# Replaces the vendored `tornado-popup`.
+# Replaces the vendored `tui-easy-popup`.
 tui-popup = { workspace = true, optional = true }
 # Optional — BigText widget from tui-big-text (MIT/Apache-2.0).
 # Renders large pixel text using font8x8 glyphs. Gated behind the
-# `big-text` feature. Replaces the vendored `tornado-big-text`.
+# `big-text` feature. Replaces the vendored `tui-easy-big-text`.
 # Consumers access `BigText` and `PixelSize` via
-# `tornado::widget::{BigText, PixelSize}` or the module re-export
-# `tornado::big_text`.
+# `tui-easy::widget::{BigText, PixelSize}` or the module re-export
+# `tui-easy::big_text`.
 tui-big-text = { workspace = true, optional = true }
 # Optional — Tree widget from the tui-tree-widget crate (MIT).
 # A stateful tree widget with selection, folding, and scrollbar support.
 # Gated behind the `tree` feature. Replaces the vendored
-# `tornado-tree-widget`.
+# `tui-easy-tree-widget`.
 tui-tree-widget = { workspace = true, optional = true }
 # Optional — original BarChart/Bar/BarGroup widget (round-12). No
 # upstream replacement pattern applies here (unlike tabs/sparkline/list,
 # this isn't a thin re-export of a `ratatui::widgets` type). Gated
 # behind the `barchart` feature.
-tornado-barchart = { workspace = true, optional = true }
+tui-easy-barchart = { workspace = true, optional = true }
 # Optional — vendored TextArea + TextAreaState from xai-ratatui-textarea
 # (Apache-2.0). ratatui ships no built-in text-area widget, so unlike
 # tabs/sparkline/list there's no upstream re-export path here either.
 # Gated behind the `textinput` feature.
-tornado-textinput = { workspace = true, optional = true }
+tui-easy-textinput = { workspace = true, optional = true }
 
 [features]
 default = []
-styles = ["dep:tornado-styles"]
-wrap = ["dep:tornado-wrap"]
+styles = ["dep:tui-easy-styles"]
+wrap = ["dep:tui-easy-wrap"]
 hyperlink = ["dep:hyperrat"]
 spinner = ["dep:ratatui-cheese"]
 scroller = ["dep:tui-scrollview"]
@@ -100,47 +100,47 @@ big-text = ["dep:tui-big-text"]
 # Tree widget from the tui-tree-widget crate (MIT).
 tree = ["dep:tui-tree-widget"]
 # Original BarChart/Bar/BarGroup widget (round-12).
-barchart = ["dep:tornado-barchart"]
+barchart = ["dep:tui-easy-barchart"]
 # Vendored TextArea + TextAreaState from xai-ratatui-textarea (round-13).
-textinput = ["dep:tornado-textinput"]
+textinput = ["dep:tui-easy-textinput"]
 # Log view: aggregates styles + scroller + wrap to expose
-# `tornado::tab_log::TabLog` — per-tab scroll log helper.
+# `tui-easy::tab_log::TabLog` — per-tab scroll log helper.
 log_view = [
-    "dep:tornado-styles",
+    "dep:tui-easy-styles",
     "dep:tui-scrollview",
-    "dep:tornado-wrap",
+    "dep:tui-easy-wrap",
 ]
 
 # Integration tests — each gated on the feature it exercises, so
 # consumers who don't enable that feature don't pay for the test
 # (and the test's dependencies).
 
-# tornado-styles: round-1 anstyle -> ratatui roundtrip.
+# tui-easy-styles: round-1 anstyle -> ratatui roundtrip.
 [[test]]
 name = "styles_integration"
 required-features = ["styles"]
 
-# tornado-hyperlink: OSC 8 encoding reach-through (cell 0 prefix).
+# tui-easy-hyperlink: OSC 8 encoding reach-through (cell 0 prefix).
 [[test]]
 name = "hyperlink_integration"
 required-features = ["hyperlink"]
 
-# tornado-spinner: frame advance via tick + StatefulWidget render path.
+# tui-easy-spinner: frame advance via tick + StatefulWidget render path.
 [[test]]
 name = "spinner_integration"
 required-features = ["spinner"]
 
-# tornado-scrollview: offset advance + scrollbar visibility policy +
-# viewport slicing through `tornado::scroller` re-export.
+# tui-easy-scrollview: offset advance + scrollbar visibility policy +
+# viewport slicing through `tui-easy::scroller` re-export.
 [[test]]
 name = "scrollview_integration"
 required-features = ["scroller"]
 
-# tornado-barchart / tornado-textinput integration tests live inside
+# tui-easy-barchart / tui-easy-textinput integration tests live inside
 # those sibling crates' own `tests/` directories, exercised via
-# `cargo test -p tornado-barchart -p tornado-textinput`.
+# `cargo test -p tui-easy-barchart -p tui-easy-textinput`.
 
-# TabLog unit-tests live inside `crates/tornado/src/tab_log.rs`
+# TabLog unit-tests live inside `crates/tui-easy/src/tab_log.rs`
 # (inline `#[cfg(test)] mod tests`). Exercised at module level.
 
 # Multi-tab-log example exercises tabs, sparkline, spinner,

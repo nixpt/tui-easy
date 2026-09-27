@@ -5,10 +5,10 @@
 //!
 //! | Region   | Source                       | Role                                                       |
 //! |----------|------------------------------|------------------------------------------------------------|
-//! | Title    | `tornado-spinner`            | Global `SpinnerState` driven by `Tick`-elapsed time        |
-//! | TabNav   | `tornado::widget::TabNav`    | 3-row band of 5 stream titles + active-tab chevron         |
-//! | Body     | `tornado::tab_log::TabLog`   | Active tab's `render_pair()` driving the scroll viewport   |
-//! | Footer   | `tornado::widget`            | `status_bar` with offset + top-anchor on the active tab    |
+//! | Title    | `tui_easy-spinner`            | Global `SpinnerState` driven by `Tick`-elapsed time        |
+//! | TabNav   | `tui_easy::widget::TabNav`    | 3-row band of 5 stream titles + active-tab chevron         |
+//! | Body     | `tui_easy::tab_log::TabLog`   | Active tab's `render_pair()` driving the scroll viewport   |
+//! | Footer   | `tui_easy::widget`            | `status_bar` with offset + top-anchor on the active tab    |
 //!
 //! ## Per-decision table (round-8 design memo)
 //!
@@ -22,7 +22,7 @@
 //! | D6 | Tests | 6 inline `TestBackend` smoke tests |
 //! | D7 | Tabs styling | `Style::dim()` inactive, `Style::fg(Cyan).bold()` active |
 //! | D8 | Module split | `main.rs` (orchestration) + `tab_log.rs` (seeders) |
-//! | D9 | Cargo wiring | 6-feature tornado (round 6 catch-up: `TabNav` via umbrella) |
+//! | D9 | Cargo wiring | 6-feature tui_easy (round 6 catch-up: `TabNav` via umbrella) |
 //!
 //! ## Hazards carried forward (from `.dejavue` collision captures)
 //!
@@ -41,7 +41,7 @@
 //!
 //! ## TabNav: from vendored crate to native `ratatui::widgets::Tabs`
 //!
-//! `TabNav` was originally backed by a vendored `crates/tornado-tabs`
+//! `TabNav` was originally backed by a vendored `crates/tui_easy-tabs`
 //! mirror of `ratatui::widgets::Tabs`. Since ratatui 0.30 provides
 //! `Tabs` natively, the vendored crate was removed and `TabNav` is
 //! now a direct re-export of `ratatui::widgets::Tabs`.
@@ -70,7 +70,7 @@ use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 use ratatui::layout::{Constraint, Direction, Layout};
 use ratatui::text::{Line, Span};
 use ratatui::widgets::Paragraph;
-use tornado::widget::TabNav;
+use tui_easy::widget::TabNav;
 
 /// Inline-test-only imports — gated so `cargo build` stays clean.
 #[cfg(test)]
@@ -80,13 +80,13 @@ use ratatui::backend::TestBackend;
 #[cfg(test)]
 use ratatui::buffer::Buffer;
 
-use tornado::event::TuiEvent;
-use tornado::spinner::{SpinnerState, SpinnerType};
-use tornado::tab_log::TabLog;
-use tornado::theme::RatatuiThemeColors;
+use tui_easy::event::TuiEvent;
+use tui_easy::spinner::{SpinnerState, SpinnerType};
+use tui_easy::tab_log::TabLog;
+use tui_easy::theme::RatatuiThemeColors;
 use ratatui::symbols::bar;
-use tornado::widget::{Sparkline, status_bar};
-use tornado::{run_app, TuiApp};
+use tui_easy::widget::{Sparkline, status_bar};
+use tui_easy::{run_app, TuiApp};
 
 use crate::tab_log::{append_row, seed_streams, TAB_TITLES};
 
@@ -154,7 +154,7 @@ impl MultiTabApp {
             tabs: seed_streams(),
             active_tab: 0,
             spinner_state: SpinnerState::new(SpinnerType::Dot),
-            theme: tornado::theme::ThemeColors::default().to_ratatui(),
+            theme: tui_easy::theme::ThemeColors::default().to_ratatui(),
             last_tick: Instant::now(),
             tick_count: 0,
             sparkline_ring: vec![1; SPARKLINE_RING_LEN],
@@ -215,7 +215,7 @@ impl TuiApp for MultiTabApp {
                 self.active_tab,
                 format!("task in {title} done (tick {})", self.tick_count),
                 Some(format!(
-                    "https://github.com/nixpt/arniko/blob/main/{title}/tick/{}",
+                    "https://github.com/nixpt/tui-easy/blob/main/{title}/tick/{}",
                     self.tick_count
                 )),
             );
@@ -341,8 +341,8 @@ impl TuiApp for MultiTabApp {
             title_area,
         );
 
-        // ── TabNav: tornado::widget::TabNav (round-6 catch-up —
-        //    `crates/tornado-tabs` mirrors `ratatui::widgets::Tabs`
+        // ── TabNav: tui_easy::widget::TabNav (round-6 catch-up —
+        //    `crates/tui_easy-tabs` mirrors `ratatui::widgets::Tabs`
         //    verbatim; the umbrella surfaces it under the semantic
         //    alias `TabNav` so consumers don't have to remember
         //    whether the source widget is named Tabs or TabNav).
@@ -428,7 +428,7 @@ impl TuiApp for MultiTabApp {
         // Round-10: 12-col Sparkline on the right flank of the
         // footer's 2-row content. Uses the native
         // `ratatui::widgets::Sparkline` API (the vendored
-        // `tornado-sparkline` has been removed).
+        // `tui_easy-sparkline` has been removed).
         frame.render_widget(
             Sparkline::default()
                 .data(&self.sparkline_ring[..])

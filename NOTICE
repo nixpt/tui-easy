@@ -1,0 +1,23 @@
+Tui Easy
+Copyright 2026 Exosphere Team
+
+Tui Easy is dual-licensed under MIT OR Apache-2.0 (LICENSE-MIT, LICENSE-APACHE),
+except where a crate states otherwise below. It incorporates third-party
+source, whose original copyright and license terms are preserved here.
+
+Extracted from https://github.com/nixpt/arniko (the `tornado` TUI toolkit,
+renamed `tui-easy`), which carries the same history for these crates.
+
+==============================================================================
+Tui Easy TUI crates
+==============================================================================
+
+Each crate carries its own NOTICE with the exact upstream files:
+
+  crates/tui-easy-barchart   ratatui (MIT OR Apache-2.0)
+  crates/tui-easy-styles     xai-org/grok-build (Apache-2.0 only)
+  crates/tui-easy-textinput  xai-org/grok-build (Apache-2.0 only)
+  crates/tui-easy-wrap       xai-org/grok-build (Apache-2.0 only)
+
+The three grok-build derivatives are licensed Apache-2.0 only; they are not
+available under MIT.

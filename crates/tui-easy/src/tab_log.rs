@@ -1,12 +1,12 @@
 //! Per-tab virtual-scroll log primitive.
 //!
-//! Aggregates `tornado-styles` (HyperlinkTarget), `tui-scrollview` (ScrollView +
-//! ScrollViewState), and `tornado-wrap` (word-wrap helpers) behind the single
+//! Aggregates `tui-easy-styles` (HyperlinkTarget), `tui-scrollview` (ScrollView +
+//! ScrollViewState), and `tui-easy-wrap` (word-wrap helpers) behind the single
 //! `log_view` feature gate. Each [`TabLog`] owns an independent virtual-scroll
 //! buffer with OSC-8 anchor registries, pin-to-bottom tracking, and sequential
 //! anchor-ID assignment.
 //!
-//! See the [crate README](https://github.com/nixpt/arniko/blob/main/crates/tornado/README.md)
+//! See the [crate README](https://github.com/nixpt/tui-easy/blob/main/crates/tui-easy/README.md)
 //! for usage patterns and feature flag documentation.
 //!
 //! Lifts the round-7 `ScrollLogApp`'s per-tab mechanics — row registry,
@@ -15,13 +15,13 @@
 //! round-8 + any future multi-stream consumer can compose under one or
 //! more [`crate::widget::TabNav`] instances.
 //!
-//! Feature-gated behind `log_view = ["dep:tornado-styles",
-//! "dep:tornado-scrollview", "dep:tornado-wrap"]`. The umbrella pulls
+//! Feature-gated behind `log_view = ["dep:tui-easy-styles",
+//! "dep:tui_easy-scrollview", "dep:tui-easy-wrap"]`. The umbrella pulls
 //! in the three vendored sub-crates that the rebuild pipeline touches:
 //!
-//! * `tornado-styles` for the [`HyperlinkTarget`] registry shape.
-//! * `tornado-scrollview` for [`ScrollView`] + [`ScrollViewState`].
-//! * `tornado-wrap` for `word_wrap` consumers that opt in (the
+//! * `tui-easy-styles` for the [`HyperlinkTarget`] registry shape.
+//! * `tui_easy-scrollview` for [`ScrollView`] + [`ScrollViewState`].
+//! * `tui-easy-wrap` for `word_wrap` consumers that opt in (the
 //!   smoke test exercises the helper end-to-end).
 //!
 //! Public surface is intentionally tight: most fields are private;
@@ -34,7 +34,7 @@ use ratatui::text::Line;
 use ratatui::widgets::Paragraph;
 
 use tui_scrollview::{ScrollView, ScrollViewState};
-use tornado_styles::HyperlinkTarget;
+use tui_easy_styles::HyperlinkTarget;
 
 /// One row in a [`TabLog`]'s virtual buffer.
 ///

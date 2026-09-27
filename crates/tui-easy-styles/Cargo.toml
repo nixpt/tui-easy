@@ -1,5 +1,5 @@
 [package]
-name = "tornado-styles"
+name = "tui-easy-styles"
 version.workspace = true
 license = "Apache-2.0"  # derived from Apache-2.0-only xai-org/grok-build code — see NOTICE
 homepage.workspace = true

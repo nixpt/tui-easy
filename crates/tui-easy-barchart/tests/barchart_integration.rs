@@ -1,4 +1,4 @@
-//! Integration tests for `tornado-barchart`.
+//! Integration tests for `tui-easy-barchart`.
 //!
 //! - 6 integration tests
 //! - Round-12 differentiator tests:
@@ -14,7 +14,7 @@ use ratatui::backend::TestBackend;
 use ratatui::buffer::Buffer;
 use ratatui::layout::{Direction, Rect};
 use ratatui::Terminal;
-use tornado_barchart::{Bar, BarChart, BarGroup, Widget};
+use tui_easy_barchart::{Bar, BarChart, BarGroup, Widget};
 
 fn render_chart(chart: BarChart<'static>, area: Rect, w: u16, h: u16) -> Buffer {
     let backend = TestBackend::new(w, h);

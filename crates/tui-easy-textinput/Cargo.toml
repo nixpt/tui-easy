@@ -1,5 +1,5 @@
 [package]
-name        = "tornado-textinput"
+name        = "tui-easy-textinput"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -13,9 +13,9 @@ publish     = false
 # Vendoring surface — adopt the upstream xai-ratatui-textarea dep chain so
 # the vendored source compiles WITHOUT modification. Round-13 expressly
 # AVOIDS vendoring-side refactoring (and the upstream-internal-dep-drift
-# risk that comes with it). The dep chain mirrors tornado-wrap's strict
+# risk that comes with it). The dep chain mirrors tui-easy-wrap's strict
 # mirror pattern: every dep the upstream needed, we inherit through the
-# arniko workspace.dependencies table.
+# tui-easy workspace.dependencies table.
 #
 # Per the discovery step: 5 vendored files need:
 #   - ratatui + ratatui-core (widget rendering + buf/rect core types)
@@ -28,7 +28,7 @@ publish     = false
 #     NOTE: the example crate `examples/command-palette` does NOT use the
 #     upstream keymap handler (`classify_key_event` + `is_altgr`) — it
 #     reads keys through the TuiApp::handle_event envelope from the
-#     `tornado` umbrella instead. The crossterm dep is inherited for the
+#     `tui-easy` umbrella instead. The crossterm dep is inherited for the
 #     VENDORED SOURCE to compile (textarea.rs + editor_keys.rs reference
 #     crossterm::event::* types) but is NOT exposed via the umbrella.
 [dependencies]

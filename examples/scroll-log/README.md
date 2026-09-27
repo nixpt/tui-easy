@@ -1,18 +1,18 @@
 # scroll-log
 
 End-to-end example exercising **every** borrow-debris sibling shipped
-in `tornado` as a single [`TuiApp`].
+in `tui-easy` as a single [`TuiApp`].
 
 This is round 7 of the awesome-ratatui adoption series. The five
 sibling crates were vendored in rounds 1–5:
 
 | Widget          | Source crate        | Walmart round |
 |-----------------|---------------------|---------------|
-| `HyperlinkTarget` | `tornado-styles`  | 1 |
-| word-wrapping   | `tornado-wrap`      | 2 |
-| `Link`          | `tornado-hyperlink` | 3 |
-| `Spinner`       | `tornado-spinner`   | 4 |
-| `ScrollView`    | `tornado-scrollview`| 5 |
+| `HyperlinkTarget` | `tui-easy-styles`  | 1 |
+| word-wrapping   | `tui-easy-wrap`      | 2 |
+| `Link`          | `tui-easy-hyperlink` | 3 |
+| `Spinner`       | `tui-easy-spinner`   | 4 |
+| `ScrollView`    | `tui-easy-scrollview`| 5 |
 
 This `scroll-log` crate is the first downstream app to compose all
 five into one running program, providing a worked example of how a
@@ -32,7 +32,7 @@ developer can mix-and-match them.
   scrolls (j/k/↑/↓/PgUp/PgDn/g/G), the top-of-viewport anchor shifts,
   and the status bar shows the current `anchor #NNNN` id. Round 1
   target type + round 3 widget.
-* **Footer**: a `tornado::widget::status_bar(left, right, theme)`
+* **Footer**: a `tui_easy::widget::status_bar(left, right, theme)`
   holds the scroll offset + top anchor + frame counter + pin
   state. Round 1 theme bridge.
 

@@ -15,19 +15,19 @@ path = "src/main.rs"
 
 [dependencies]
 # Round 9 — the per-tab scroll mechanics come from
-# `tornado::tab_log::TabLog`, gated behind the `log_view` umbrella
+# `tui-easy::tab_log::TabLog`, gated behind the `log_view` umbrella
 # feature (which transitively pulls in styles + scroller + wrap).
 # `spinner` is declared explicitly because the title bar still
 # drives a `SpinnerState` directly. `wrap` is in because the inline
-# smoke test exercises `tornado::wrap::word_wrap_line` directly;
+# smoke test exercises `tui-easy::wrap::word_wrap_line` directly;
 # without enabling the feature, the `#[cfg(test)] mod tests` path
 # fails to compile with E0433.
-tornado = { workspace = true, features = [
+tui-easy = { workspace = true, features = [
     "log_view",
     "spinner",
     "wrap",
 ] }
-# Pattern-matching on KeyCode / KeyModifiers — not re-exported by tornado.
+# Pattern-matching on KeyCode / KeyModifiers — not re-exported by tui-easy.
 crossterm = "0.28"
 # ratatui's TestBackend is in the default feature set, but the example
 # declares the dep explicitly so it shows up in `cargo tree` for the

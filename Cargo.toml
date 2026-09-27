@@ -1,0 +1,58 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/tui-easy",
+    "crates/tui-easy-styles",
+    "crates/tui-easy-wrap",
+    "crates/tui-easy-barchart",
+    "crates/tui-easy-textinput",
+    "examples/scroll-log",
+    "examples/command-palette",
+    "examples/multi-tab-log",
+    "examples/tui-easy-showcase",
+]
+
+[workspace.package]
+version      = "0.3.0"
+license      = "MIT OR Apache-2.0"
+homepage     = "https://github.com/nixpt/tui-easy"
+repository   = "https://github.com/nixpt/tui-easy"
+categories   = ["command-line-interface"]
+edition      = "2024"
+rust-version = "1.85.0"
+
+# ── workspace.dependencies ────────────────────────────────────────────────────
+[workspace.dependencies]
+# TUI rendering (workspace-wide, used by tui-easy + tui-easy-styles).
+ratatui        = "0.30"
+# ratatui subcrates — re-exported through the main `ratatui` crate.
+# Declared as workspace deps so community crates (tui-popup,
+# tui-tree-widget, tui-scrollview, hyperrat) can depend on them
+# directly instead of vendoring. Already transitive deps of
+# `ratatui = "0.30"` — adding them here is zero-cost.
+ratatui-core    = "0.1"
+ratatui-widgets = "0.3"
+crossterm      = "0.28"
+tracing        = "0.1"
+# ANSI styling crate (used by tui-easy-styles to bridge into ratatui styles).
+anstyle        = "1"
+# Word wrapping engine (used by tui-easy-wrap).
+textwrap       = "0.16"
+unicode-width  = "0.2"
+unicode-segmentation = "1"
+
+# Community TUI crates.
+tui-popup       = "0.7"
+tui-tree-widget = "0.24"
+tui-scrollview  = "0.6"
+hyperrat        = "0.1"
+tui-big-text    = "0.8"
+tui-scrollbar   = "0.2"
+ratatui-cheese  = "0.7"
+
+# Sibling crates
+tui-easy           = { path = "crates/tui-easy",           version = "0.3.0" }
+tui-easy-styles    = { path = "crates/tui-easy-styles",    version = "0.3.0" }
+tui-easy-wrap      = { path = "crates/tui-easy-wrap",       version = "0.3.0" }
+tui-easy-barchart  = { path = "crates/tui-easy-barchart",   version = "0.3.0" }
+tui-easy-textinput = { path = "crates/tui-easy-textinput",  version = "0.3.0" }

@@ -1,8 +1,8 @@
-//! Integration test for `tornado` + `tornado-scrollview` (`--features scroller`).
+//! Integration test for `tui_easy` + `tui_easy-scrollview` (`--features scroller`).
 //!
 //! Guards the scrollview end-to-end:
 //!  * `ScrollView`, `ScrollViewState`, and `ScrollbarVisibility` are
-//!    reachable via the `tornado::scroller` re-export.
+//!    reachable via the `tui_easy::scroller` re-export.
 //!  * A scroll container can be populated via `render_widget`, rendered
 //!    via `StatefulWidget::render`, and the visible-area slice contains
 //!    the expected symbols.
@@ -21,7 +21,7 @@ use ratatui::buffer::Buffer;
 use ratatui::layout::{Position, Rect, Size};
 use ratatui::text::Span;
 use ratatui::widgets::{Paragraph, StatefulWidget};
-use tornado::scroller::{ScrollView, ScrollViewState, ScrollbarVisibility};
+use tui_easy::scroller::{ScrollView, ScrollViewState, ScrollbarVisibility};
 
 fn build_scroll_view_with_az_grid() -> ScrollView {
     populate_with_az_grid(ScrollView::new(Size::new(10, 10)))
@@ -29,7 +29,7 @@ fn build_scroll_view_with_az_grid() -> ScrollView {
 
 fn populate_with_az_grid(mut scroll_view: ScrollView) -> ScrollView {
     // Reuse the A-Z 10x10 grid that the upstream test fixture uses, so
-    // assertions are stable across vendoring + tornado patches.
+    // assertions are stable across vendoring + tui_easy patches.
     for y in 0..10 {
         for x in 0..10 {
             let c = char::from_u32((x + y * 10) % 26 + 65).unwrap();
@@ -46,7 +46,7 @@ fn render_stateful(scroll_view: &ScrollView, buf: &mut Buffer, state: &mut Scrol
 }
 
 #[test]
-fn scroll_view_widget_is_reachable_through_tornado_scroller() {
+fn scroll_view_widget_is_reachable_through_tui_easy_scroller() {
     // Reachability + renderer chain: build the widget through the
     // warehouse-side re-export, render it through StatefulWidget,
     // confirm the buffer has content at known coordinates.
@@ -72,10 +72,10 @@ fn scroll_view_widget_is_reachable_through_tornado_scroller() {
 
 #[test]
 fn widget_alias_scroll_view_compiles_through_re_export() {
-    // Reachability compile-only check: tornado::widget::ScrollView resolves
-    // to the same type as tornado::scroller::ScrollView. The assignment
+    // Reachability compile-only check: tui_easy::widget::ScrollView resolves
+    // to the same type as tui_easy::scroller::ScrollView. The assignment
     // below forces the type identity through monomorphization.
-    let _value: tornado::scroller::ScrollView = tornado::widget::ScrollView::new(Size::new(2, 2));
+    let _value: tui_easy::scroller::ScrollView = tui_easy::widget::ScrollView::new(Size::new(2, 2));
 }
 
 #[test]
