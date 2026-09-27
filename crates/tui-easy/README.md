@@ -1,8 +1,8 @@
 # 🌪️ Tui Easy
 
-**Shared terminal UI shell** — terminal init, crossterm event loop, themes, and a curated palette of ratatui widgets behind a unified feature surface. Extracted from [nixpt/tui-easy](https://github.com/nixpt/tui-easy).
+**Shared terminal UI shell** — terminal init, crossterm event loop, themes, and a curated palette of ratatui widgets behind a unified feature surface. Originally the `tornado` crates of the arniko UI SDK.
 
-Tui Easy unifies TUI-related code across its consumers (including [spores](https://github.com/openko-network/spores)) so every project gets the same event loop, theme system, and widget access without wiring each dependency individually.
+Tui Easy unifies TUI-related code across its consumers (including teddy, obs-tui and spores) so every project gets the same event loop, theme system, and widget access without wiring each dependency individually.
 
 ---
 
@@ -12,9 +12,9 @@ Add tui-easy to your `Cargo.toml` with the features you need:
 
 ```toml
 [dependencies]
-tui-easy = { git = "https://github.com/nixpt/tui-easy", features = [
+tui-easy = { version = "0.3", features = [
     "spinner", "scroller", "big-text", "popup", "tree",
-], optional = true }
+] }
 ```
 
 The minimal app looks like this:
@@ -32,7 +32,7 @@ impl TuiApp for MyApp {
     }
     fn handle_event(&mut self, event: TuiEvent) {
         if let TuiEvent::Key(k) = event {
-            if k.code == crossterm::event::KeyCode::Char('q') {
+            if k.code == tui_easy::crossterm::event::KeyCode::Char('q') {
                 self.quit = true;
             }
         }
@@ -44,6 +44,10 @@ fn main() -> std::io::Result<()> {
     run_app(MyApp { quit: false }, Duration::from_millis(80))
 }
 ```
+
+Key and event types come from `tui_easy::crossterm` (ratatui's own crossterm
+re-export). Don't add a separate `crossterm` dependency: a different version
+compiles into distinct types that won't match `TuiEvent::Key`.
 
 ---
 
@@ -69,7 +73,7 @@ Tui Easy's features are entirely additive and **opt-in**: enable only what you n
 Enable multiple features at once:
 
 ```toml
-tui-easy = { git = "https://github.com/nixpt/tui-easy", features = [
+tui-easy = { version = "0.3", features = [
     "spinner", "scroller", "popup", "log_view",
 ] }
 ```
@@ -469,12 +473,12 @@ cargo test  -p scroll-log   # inline smoke tests
 
 ## Cross-project usage
 
-The [spores project](https://github.com/openko-network/spores) uses tui-easy as its TUI runtime. It depends on tui-easy's **core infrastructure** — the `TuiApp` trait, `run_app()`, theme types, and event system — without enabling any widget features:
+The spores project uses tui-easy as its TUI runtime. It depends on tui-easy's **core infrastructure** — the `TuiApp` trait, `run_app()`, theme types, and event system — without enabling any widget features:
 
 ```toml
 # spores/Cargo.toml
 [dependencies]
-tui-easy = { git = "https://github.com/nixpt/tui-easy", optional = true }
+tui-easy = { version = "0.3", optional = true }
 
 [features]
 spores-tui = ["dep:ratatui", "dep:crossterm", "dep:tui-easy"]

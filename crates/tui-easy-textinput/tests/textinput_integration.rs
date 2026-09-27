@@ -194,8 +194,8 @@ fn integration_05_vendoring_compiles_with_upstream_dep_chain() {
     let _action = MouseAction::Nothing;
     let _id = ElementId::from_raw(1);
     let _kind = ElementKind(2_u16);
-    let _undo_predicate = is_undo_input as fn(&crossterm::event::KeyEvent) -> bool;
-    let _altgr_predicate_msw = is_altgr as fn(crossterm::event::KeyModifiers) -> bool;
+    let _undo_predicate = is_undo_input as fn(&ratatui::crossterm::event::KeyEvent) -> bool;
+    let _altgr_predicate_msw = is_altgr as fn(ratatui::crossterm::event::KeyModifiers) -> bool;
     let _edit_buffer = EditBuffer::default();
     let _edit_command = EditCommand::Insert('x');
     let _edit_plan: Result<EditPlan, _> = Err(
@@ -207,9 +207,9 @@ fn integration_05_vendoring_compiles_with_upstream_dep_chain() {
         kind: tui_easy_textinput::TextElementEventKind::Click,
     };
     // `classify_key_event` takes a crossterm KeyEvent; construct one inline.
-    let _keyevent = crossterm::event::KeyEvent::new(
-        crossterm::event::KeyCode::Char('q'),
-        crossterm::event::KeyModifiers::NONE,
+    let _keyevent = ratatui::crossterm::event::KeyEvent::new(
+        ratatui::crossterm::event::KeyCode::Char('q'),
+        ratatui::crossterm::event::KeyModifiers::NONE,
     );
     let _ = classify_key_event;
 }

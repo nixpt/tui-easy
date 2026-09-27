@@ -17,7 +17,7 @@
 //!     fn draw(&mut self, frame: &mut ratatui::Frame) {}
 //!     fn handle_event(&mut self, event: TuiEvent) {
 //!         if let TuiEvent::Key(k) = event {
-//!             if k.code == crossterm::event::KeyCode::Char('q') {
+//!             if k.code == ratatui::crossterm::event::KeyCode::Char('q') {
 //!                 self.quit = true;
 //!             }
 //!         }
@@ -81,6 +81,13 @@ pub use tui_scrollview as scroller;
 // Migrated: `list` feature now uses `ratatui::widgets::{List, ListState}`
 // directly (was vendored via `crates/tui_easy-list`, now removed).
 // The re-export is via widget.rs. No module-level `pub use` is needed.
+
+/// The crossterm crate tui-easy's event and key types come from — ratatui's own
+/// re-export, so it is always the version ratatui's backend uses. Take key and
+/// event types from here (`tui_easy::crossterm::event::KeyCode`) rather than a
+/// direct `crossterm` dependency: a different crossterm version compiles into
+/// distinct types that don't match `TuiEvent::Key`.
+pub use ratatui::crossterm;
 
 // Original BarChart/Bar/BarGroup widget (round-12) — no upstream
 // equivalent to migrate to, unlike tabs/sparkline/list. Consumers reach

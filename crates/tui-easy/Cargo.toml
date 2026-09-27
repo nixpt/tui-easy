@@ -8,9 +8,9 @@ license.workspace = true
 homepage.workspace = true
 repository.workspace = true
 categories = ["command-line-interface"]
+keywords = ["tui", "ratatui", "terminal", "widgets", "shell"]
 
 [dependencies]
-crossterm = "0.28"
 ratatui = "0.30"
 tracing = "0.1"
 # Optional — small ANSI/ratatui bridge helpers + HyperlinkTarget type,

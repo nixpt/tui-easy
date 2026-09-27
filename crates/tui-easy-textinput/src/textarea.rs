@@ -2,10 +2,10 @@ use crate::editor::{
     ApplyEditPlanError, EditBuffer, EditCommand, EditCommandCategory, EditOutcome, EditPlan,
     WordStyle, classify_key_event,
 };
-use crossterm::event::KeyCode;
-use crossterm::event::KeyEvent;
-use crossterm::event::KeyModifiers;
-use crossterm::event::{MouseButton, MouseEvent, MouseEventKind};
+use ratatui::crossterm::event::KeyCode;
+use ratatui::crossterm::event::KeyEvent;
+use ratatui::crossterm::event::KeyModifiers;
+use ratatui::crossterm::event::{MouseButton, MouseEvent, MouseEventKind};
 use ratatui::buffer::Buffer;
 use ratatui::layout::Rect;
 use ratatui::style::Color;

@@ -7,7 +7,7 @@
 //! Consumers should not need to call these directly — [`crate::run_app()`]
 //! handles them automatically.
 
-use crossterm::{
+use ratatui::crossterm::{
     event::{DisableMouseCapture, EnableMouseCapture},
     execute,
     terminal::{EnterAlternateScreen, LeaveAlternateScreen, disable_raw_mode, enable_raw_mode},

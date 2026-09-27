@@ -98,11 +98,10 @@
 //! - **`Instant::now()` test-loop trap** — the vendored source mentions
 //!   `Instant` in cursor-blink timing helpers, but tests use explicit
 //!   duration injection; no wall-clock in tests.
-//! - **Crossterm dep inheritance** — the vendored source references
-//!   `crossterm::event::KeyEvent` etc. We inherit `crossterm` as a
-//!   vendoring-dep (NOT re-exported via the `tui_easy` umbrella).
-//!   Cross-references: this is the same precedent as `tui-easy-wrap`
-//!   inheriting `textwrap` (round-2 dep inheritance).
+//! - **Crossterm via ratatui** — the vendored source references crossterm
+//!   event types (`KeyEvent` etc.); they come from ratatui's re-export
+//!   (`ratatui::crossterm`), not a direct crossterm dependency, so they are
+//!   always the same crossterm version ratatui's backend uses.
 //!
 //! ## (6) Upstream reference
 //!
@@ -160,7 +159,7 @@ pub use textarea::{
 };
 
 pub use ratatui::widgets::{WidgetRef, StatefulWidgetRef};
-use crossterm::event::KeyModifiers;
+use ratatui::crossterm::event::KeyModifiers;
 
 // `is_altgr` from upstream — Windows-specific. Vendored verbatim, NOT
 // re-exported (vendored source is internal-to-tui-easy-textinput).

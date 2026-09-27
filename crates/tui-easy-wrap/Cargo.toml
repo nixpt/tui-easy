@@ -8,6 +8,8 @@ edition.workspace = true
 rust-version.workspace = true
 description = "textwrap word-wrap helpers over ratatui Line/Span, borrowed from xai-ratatui-textarea"
 categories = ["command-line-interface"]
+readme = "README.md"
+keywords = ["tui", "ratatui", "wrap", "textwrap", "terminal"]
 
 [dependencies]
 ratatui = { workspace = true }
