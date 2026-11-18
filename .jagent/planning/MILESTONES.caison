@@ -1,0 +1,42 @@
+@caison { version: "1.0" }
+
+schema: "milestones/1"
+
+project: {
+  name: "tui-easy"
+  kind: "repo"
+  lifecycle: "maintenance" ~0.7 @verified { at: "2026-11-18", by: "altair" }
+  lifecycle_since: "2026-09-27"
+  home: "zorro"
+  summary: "a ratatui convenience toolkit (terminal init, event loop, theming, curated widgets), extracted from arniko's tornado; tui-easy 0.3.0 on crates.io, used by teddy; no commits since 2026-09-27"
+  stewards: ["altair"]
+  lineage: [
+    { rel: "carved_from", from: "arniko", note: "tornado extracted as tui-easy (2026-09-27)" },
+  ]
+  evidence: {
+    default_branch: "main"
+    registries: [{ registry: "crates.io", name: "tui-easy" }]
+  }
+}
+
+milestones: [
+  {
+    id: "T1"
+    title: "tornado widget set: vendored widgets migrated to upstream crates, showcase, docs"
+    status: "done" @verified { at: "2026-11-18", by: "altair" }
+    done_at: "2026-07-30"
+    done_when: [{ claim: "barchart + textinput widgets merged", check: { kind: "commit", grep: "add barchart \\+ textinput widgets" } }]
+  },
+  {
+    id: "T2"
+    title: "standalone and published"
+    status: "done" @verified { at: "2026-11-18", by: "altair" }
+    done_at: "2026-09-27"
+    version: "v0.3.0"
+    done_when: [
+      { claim: "publishable (PR #1)", check: { kind: "merged", pr: "1" } },
+      { claim: "v0.3.0 tagged", check: { kind: "tag", pattern: "v0.3.0" } },
+      { claim: "tui-easy on crates.io", check: { kind: "published", registry: "crates.io", name: "tui-easy" } },
+    ]
+  },
+]
